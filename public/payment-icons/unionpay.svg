@@ -1,0 +1,7 @@
+<svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <rect width="1024" height="1024" rx="180" fill="#E21E33"/>
+  <rect x="180" y="300" width="280" height="424" rx="40" fill="#00447C"/>
+  <rect x="370" y="300" width="280" height="424" rx="40" fill="#E21E33"/>
+  <rect x="560" y="300" width="280" height="424" rx="40" fill="#00447C" fill-opacity="0.6"/>
+  <text x="512" y="580" text-anchor="middle" fill="#fff" font-size="200" font-weight="bold" font-family="sans-serif">银联</text>
+</svg>

@@ -1,0 +1,333 @@
+// SmartTravel Qingyuan — Production Database Schema
+// Covers: Auth, Villages, Forum, Orders, Trips, Testimonials, Stats
+
+generator client {
+  provider   = "prisma-client-js"
+  output     = "../lib/generated/prisma"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ═══════════════════════════════════
+// AUTH & USERS
+// ═══════════════════════════════════
+
+model User {
+  id            String    @id @default(cuid())
+  phone         String?   @unique
+  email         String?   @unique
+  password      String?   // bcrypt hashed; null for SMS-only users
+  name          String
+  avatar        String?
+  role          UserRole  @default(USER)
+  wechatOpenId  String?   @unique
+  qqOpenId      String?   @unique
+  locale        String    @default("zh")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions      Session[]
+  posts         ForumPost[]
+  comments      ForumComment[]
+  favorites     Favorite[]
+  orders        Order[]
+  tripPlans     TripPlan[]
+  testimonials  Testimonial[]
+  postVotes     PostVote[]
+  commentLikes  CommentLike[]
+
+  @@index([phone])
+  @@index([email])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  ENTERPRISE
+  GOVERNMENT
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  ip        String?
+  ua        String?
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+}
+
+model VerificationCode {
+  id        String   @id @default(cuid())
+  target    String   // phone or email
+  code      String
+  type      CodeType
+  used      Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([target, code])
+}
+
+enum CodeType {
+  SMS
+  EMAIL
+}
+
+// ═══════════════════════════════════
+// VILLAGES & TOURISM
+// ═══════════════════════════════════
+
+model Village {
+  id          String   @id @default(cuid())
+  slug        String   @unique // URL-friendly: "fenglin", "yaozhai"
+  name        String
+  nameEn      String
+  location    String
+  image       String?
+  rating      Float    @default(0)
+  tags        String[] // PostgreSQL array
+  tagsEn      String[]
+  description String
+  descEn      String
+  raiScore    Float    @default(0) // Rural Accessibility Index
+  cpiScore    Float    @default(0) // Cultural Preservation Index
+  vsiScore    Float    @default(0) // Village Safety Index
+  season      String
+  seasonEn    String
+  category    String   // "nature", "culture", "heritage", "wellness"
+  visitors    Int      @default(0)
+  reviewCount Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  detail      VillageDetail?
+  favorites   Favorite[]
+  tripStops   TripStop[]
+
+  @@index([slug])
+  @@index([category])
+  @@index([rating])
+}
+
+model VillageDetail {
+  id         String   @id @default(cuid())
+  villageId  String   @unique
+  village    Village  @relation(fields: [villageId], references: [id], onDelete: Cascade)
+  activities String[]
+  bestTime   String
+  transport  String
+  tips       String
+}
+
+// ═══════════════════════════════════
+// FORUM
+// ═══════════════════════════════════
+
+model ForumPost {
+  id           String    @id @default(cuid())
+  type         PostType
+  title        String
+  content      String
+  authorId     String
+  author       User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorName   String    // denormalized for display
+  authorRole   String    @default("")
+  authorAvatar String    @default("😊")
+  votes        Int       @default(0)
+  views        Int       @default(0)
+  tags         String[]
+  aiSummary    String?
+  pinned       Boolean   @default(false)
+  published    Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  comments     ForumComment[]
+  postVotes    PostVote[]
+
+  @@index([authorId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+enum PostType {
+  QUESTION
+  DISCUSSION
+  GUIDE
+  REVIEW
+}
+
+model ForumComment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorName String
+  authorAvatar String @default("😊")
+  content   String
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  commentLikes CommentLike[]
+
+  @@index([postId])
+  @@index([authorId])
+}
+
+model PostVote {
+  id     String @id @default(cuid())
+  postId String
+  post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  value  Int    // +1 or -1
+
+  @@unique([postId, userId])
+}
+
+model CommentLike {
+  id        String @id @default(cuid())
+  commentId String
+  comment   ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+}
+
+// ═══════════════════════════════════
+// ORDERS & PAYMENTS
+// ═══════════════════════════════════
+
+model Order {
+  id          String      @id @default(cuid())
+  orderNo     String      @unique // ST202603141234ABCD
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  planId      String      // "explorer" | "pro" | "premium"
+  amount      Float
+  currency    String      @default("CNY")
+  billing     String      // "monthly" | "yearly"
+  method      PayMethod
+  status      OrderStatus @default(PENDING)
+  payUrl      String?
+  paidAt      DateTime?
+  expiresAt   DateTime?   // subscription expiry
+  tradeNo     String?     // third-party transaction ID
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([orderNo])
+  @@index([status])
+}
+
+enum PayMethod {
+  ALIPAY
+  WECHAT
+  UNIONPAY
+  VISA
+  MASTERCARD
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  EXPIRED
+}
+
+// ═══════════════════════════════════
+// TRIP PLANS
+// ═══════════════════════════════════
+
+model TripPlan {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  prompt    String     // original user request
+  content   String     // AI-generated markdown plan
+  days      Int        @default(1)
+  budget    Float?
+  travelers Int        @default(1)
+  createdAt DateTime   @default(now())
+
+  stops     TripStop[]
+
+  @@index([userId])
+}
+
+model TripStop {
+  id         String   @id @default(cuid())
+  tripPlanId String
+  tripPlan   TripPlan @relation(fields: [tripPlanId], references: [id], onDelete: Cascade)
+  villageId  String?
+  village    Village?  @relation(fields: [villageId], references: [id])
+  day        Int
+  time       String?
+  activity   String
+  note       String?
+  sortOrder  Int      @default(0)
+
+  @@index([tripPlanId])
+}
+
+// ═══════════════════════════════════
+// FAVORITES
+// ═══════════════════════════════════
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  villageId String
+  village   Village  @relation(fields: [villageId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, villageId])
+  @@index([userId])
+}
+
+// ═══════════════════════════════════
+// TESTIMONIALS
+// ═══════════════════════════════════
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  name      String
+  role      String
+  content   String
+  contentEn String   @default("")
+  rating    Int      @default(5)
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([approved])
+}
+
+// ═══════════════════════════════════
+// PLATFORM STATS (key-value)
+// ═══════════════════════════════════
+
+model PlatformStat {
+  id      String @id @default(cuid())
+  key     String @unique // "visitors", "satisfaction", etc.
+  value   Float
+  suffix  String @default("")
+  label   String
+  labelEn String @default("")
+}

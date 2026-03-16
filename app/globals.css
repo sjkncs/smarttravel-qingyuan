@@ -10,32 +10,48 @@
   --color-light: var(--light);
   --color-card: var(--card);
   --color-border: var(--border);
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-200: #a7f3d0;
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
+  --color-emerald-900: #064e3b;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-rose-400: #fb7185;
+  --color-rose-500: #f43f5e;
 }
 
 @layer utilities {
   body {
     @apply bg-background text-foreground border-border;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--font-noto-sans-sc), var(--font-inter), system-ui, -apple-system, sans-serif;
   }
 }
 
 @layer base {
   :root {
-    --background: #eeeeec;
-    --foreground: #131316;
-    --muted-foreground: hsl(0, 0%, 41%);
-    --light: #5ba8ff;
-    --card: #eaeaea;
-    --border: #d5d5d5;
+    --background: #f0f7f4;
+    --foreground: #1a2e1a;
+    --muted-foreground: hsl(150, 5%, 40%);
+    --light: #10b981;
+    --card: #e8f5e9;
+    --border: #c8e6c9;
   }
 
   .dark {
-    --background: #131316;
-    --foreground: #eeeeec;
-    --muted-foreground: #aba9a3;
-    --light: #016fee;
-    --card: #1c1c1c;
-    --border: #202020;
+    --background: #0f1a14;
+    --foreground: #e8f5e9;
+    --muted-foreground: #8faa96;
+    --light: #059669;
+    --card: #1a2e1e;
+    --border: #253d2a;
   }
 }
 
@@ -147,10 +163,41 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@keyframes marquee-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
+@keyframes marquee-right {
+  0% { transform: translateX(-33.333%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 40s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marquee-right 40s linear infinite;
+}
+
+.bg-grid-pattern {
+  background-image: linear-gradient(rgba(0,0,0,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.1) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.bg-dot-pattern {
+  background-image: radial-gradient(circle at 30% 50%, white 1px, transparent 1px);
+  background-size: 24px 24px;
 }
