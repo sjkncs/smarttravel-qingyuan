@@ -18,7 +18,9 @@
     "db:reset": "npx prisma migrate reset --force",
     "electron:dev": "concurrently \"next dev --turbopack\" \"wait-on http://localhost:3000 && electron .\"",
     "electron:build": "cross-env ELECTRON_BUILD=1 next build && electron-builder --win",
-    "electron:build:portable": "cross-env ELECTRON_BUILD=1 next build && electron-builder --win portable"
+    "electron:build:mac": "cross-env ELECTRON_BUILD=1 next build && electron-builder --mac",
+    "electron:build:linux": "cross-env ELECTRON_BUILD=1 next build && electron-builder --linux",
+    "electron:build:all": "cross-env ELECTRON_BUILD=1 next build && electron-builder --win --linux"
   },
   "build": {
     "appId": "com.smarttravel.qingyuan",
@@ -81,6 +83,31 @@
         "zh_CN",
         "en_US"
       ]
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "icon": "public/favicon.ico",
+      "category": "public.app-category.travel"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        },
+        {
+          "target": "deb",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "public/icons/icon-192.png",
+      "category": "Travel",
+      "maintainer": "SmartTravel Qingyuan Team"
     }
   },
   "prisma": {
