@@ -47,13 +47,16 @@ export async function GET(req: NextRequest) {
       views: p.views,
       commentCount: p.comments.length,
       tags: p.tags,
+      images: (p as any).images || [],
       aiSummary: p.aiSummary,
-      comments: p.comments.map((c) => ({
+      aiImageUrl: (p as any).aiImageUrl || null,
+      comments: p.comments.map((c: any) => ({
         id: c.id,
         author: c.authorName,
         avatar: c.authorAvatar,
         content: c.content,
         time: formatRelativeTime(c.createdAt),
+        images: c.images || [],
         likes: c.likes,
       })),
     }));
@@ -74,7 +77,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { type, title, content, tags } = body;
+    const { type, title, content, tags, images, aiImageUrl } = body;
 
     if (!title || !content) {
       return NextResponse.json({ error: "title and content are required" }, { status: 400 });
@@ -95,6 +98,8 @@ export async function POST(req: NextRequest) {
         authorRole: body.authorRole || "",
         authorAvatar: user?.avatar || body.avatar || "",
         tags: tags || [],
+        ...(images?.length ? { images } : {}),
+        ...(aiImageUrl ? { aiImageUrl } : {}),
       },
     });
 

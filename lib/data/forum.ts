@@ -5,6 +5,7 @@ export interface ForumComment {
   content: string;
   time: string;
   likes: number;
+  images?: string[];
 }
 
 export interface ForumPost {
@@ -21,6 +22,8 @@ export interface ForumPost {
   commentCount: number;
   tags: string[];
   aiSummary?: string;
+  aiImageUrl?: string;
+  images?: string[];
   comments: ForumComment[];
 }
 

@@ -9,8 +9,11 @@ import {
   Sun, Moon, History, RefreshCw,
   Map, Brain, Compass, Route, PictureInPicture2, VolumeX,
   Check, Paperclip,
+  PanelLeftClose, PanelLeft, User, LogIn, ArrowLeft,
 } from "lucide-react";
 import MarkdownRenderer from "@/components/markdown-renderer";
+import dynamic from "next/dynamic";
+const CustomerServiceWidget = dynamic(() => import("@/components/support/CustomerServiceWidget"), { ssr: false });
 import { useSearchParams } from "next/navigation";
 
 // ── Types ──────────────────────────────────────────────
@@ -200,6 +203,10 @@ function Sidebar({
   onNew,
   onDelete,
   onSearch,
+  collapsed,
+  onToggleCollapse,
+  user,
+  onLogin,
 }: {
   conversations: Conversation[];
   activeId: string;
@@ -207,6 +214,10 @@ function Sidebar({
   onNew: () => void;
   onDelete: (id: string) => void;
   onSearch: (q: string) => void;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+  user: { name: string; avatar?: string } | null;
+  onLogin: () => void;
 }) {
   const [search, setSearch] = useState("");
 
@@ -220,17 +231,70 @@ function Sidebar({
     { label: "更早", items: conversations.filter((c) => !isToday(c.updatedAt)) },
   ];
 
-  return (
-    <aside className="w-[220px] flex flex-col bg-sidebar border-r border-border shrink-0">
-      {/* New Chat */}
-      <div className="px-3 py-3 space-y-2">
+  // Collapsed sidebar — narrow strip with icons only
+  if (collapsed) {
+    return (
+      <aside className="w-[52px] flex flex-col items-center bg-sidebar border-r border-border shrink-0 py-3 gap-2">
+        <button
+          onClick={onToggleCollapse}
+          aria-label="展开侧边栏"
+          title="展开侧边栏"
+          className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-muted/60 text-muted-foreground hover:text-foreground transition-all"
+        >
+          <PanelLeft className="h-4 w-4" />
+        </button>
         <button
           onClick={onNew}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-sm font-medium transition-all"
+          aria-label="新对话"
+          title="新对话"
+          className="h-8 w-8 rounded-lg flex items-center justify-center bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 transition-all"
         >
           <Plus className="h-4 w-4" />
-          新对话
         </button>
+        <div className="flex-1" />
+        {user ? (
+          <button
+            aria-label="我的空间"
+            title={user.name}
+            className="h-8 w-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold"
+          >
+            {user.name.charAt(0).toUpperCase()}
+          </button>
+        ) : (
+          <button
+            onClick={onLogin}
+            aria-label="登录"
+            title="登录"
+            className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-muted/60 text-muted-foreground hover:text-foreground transition-all"
+          >
+            <LogIn className="h-4 w-4" />
+          </button>
+        )}
+      </aside>
+    );
+  }
+
+  return (
+    <aside className="w-[220px] flex flex-col bg-sidebar border-r border-border shrink-0">
+      {/* Collapse + New Chat */}
+      <div className="px-3 py-3 space-y-2">
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={onToggleCollapse}
+            aria-label="收起侧边栏"
+            title="收起侧边栏"
+            className="h-8 w-8 rounded-lg flex items-center justify-center hover:bg-muted/60 text-muted-foreground hover:text-foreground transition-all shrink-0"
+          >
+            <PanelLeftClose className="h-4 w-4" />
+          </button>
+          <button
+            onClick={onNew}
+            className="flex-1 flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-sm font-medium transition-all"
+          >
+            <Plus className="h-4 w-4" />
+            新对话
+          </button>
+        </div>
 
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
@@ -287,8 +351,27 @@ function Sidebar({
         )}
       </div>
 
-      {/* Settings footer */}
-      <div className="px-3 py-3 border-t border-border">
+      {/* User profile + footer */}
+      <div className="px-3 py-3 border-t border-border space-y-2">
+        {user ? (
+          <div className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-muted/60 cursor-pointer transition-all">
+            <div className="h-8 w-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xs font-bold shrink-0">
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium truncate">{user.name}</p>
+              <p className="text-[10px] text-muted-foreground truncate">我的空间</p>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={onLogin}
+            className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all"
+          >
+            <LogIn className="h-3.5 w-3.5" />
+            登录 / 注册
+          </button>
+        )}
         <button
           onClick={() => window.open("/", "_blank")}
           className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-all"
@@ -420,6 +503,8 @@ function DesktopPageInner() {
   const [showSettings, setShowSettings] = useState(false);
   const [listening, setListening] = useState(false);
   const [attachedFile, setAttachedFile] = useState<string | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [currentUser, setCurrentUser] = useState<{ name: string; avatar?: string } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -437,7 +522,21 @@ function DesktopPageInner() {
 
     // Listen for settings event from tray
     (window as any).electronAPI?.onOpenSettings?.(() => setShowSettings(true));
+
+    // Check auth state
+    fetch("/api/auth/me")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data?.user) setCurrentUser({ name: data.user.name || data.user.email || "用户" }); })
+      .catch(() => {});
   }, []);
+
+  const handleLogin = () => {
+    if (isElectron) {
+      (window as any).electronAPI?.openExternal("http://localhost:3000/login");
+    } else {
+      window.open("/login", "_blank");
+    }
+  };
 
   // Dark mode
   useEffect(() => {
@@ -712,6 +811,10 @@ function DesktopPageInner() {
             onNew={newChat}
             onDelete={deleteConv}
             onSearch={setSearchQuery}
+            collapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+            user={currentUser}
+            onLogin={handleLogin}
           />
         )}
 
@@ -720,7 +823,19 @@ function DesktopPageInner() {
           {/* Top bar */}
           {!isMini && (
             <div className="flex items-center justify-between px-6 py-2 border-b border-border shrink-0">
-              <ModelSelector model={model} onChange={setModel} />
+              <div className="flex items-center gap-2">
+                {!isEmpty && (
+                  <button
+                    onClick={newChat}
+                    aria-label="返回"
+                    title="返回主页"
+                    className="h-7 w-7 rounded-lg flex items-center justify-center hover:bg-muted/60 text-muted-foreground hover:text-foreground transition-all"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </button>
+                )}
+                <ModelSelector model={model} onChange={setModel} />
+              </div>
               <div className="flex items-center gap-2">
                 {!isEmpty && (
                   <button
@@ -744,7 +859,7 @@ function DesktopPageInner() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  className={`flex flex-col items-center justify-center h-full px-6 ${isMini ? "pb-4" : "pb-20"}`}
+                  className={`flex flex-col items-center justify-center min-h-full px-6 py-8 ${isMini ? "pb-4" : ""}`}
                 >
                   <div className={`${isMini ? "h-12 w-12 rounded-xl mb-4" : "h-16 w-16 rounded-2xl mb-6"} bg-linear-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20`}>
                     <Mountain className={isMini ? "h-6 w-6 text-white" : "h-8 w-8 text-white"} />
@@ -972,6 +1087,7 @@ function DesktopPageInner() {
           </div>
         </main>
       </div>
+      <CustomerServiceWidget />
     </div>
   );
 }

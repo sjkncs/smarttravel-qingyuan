@@ -48,7 +48,7 @@ export default function FloatingNav() {
   return (
     <>
       {/* Floating Action Panel - Right Side */}
-      <div className="fixed right-4 bottom-6 z-50 flex flex-col items-end gap-2">
+      <div className="fixed right-4 bottom-20 z-50 flex flex-col items-end gap-2">
         {/* Quick Links Panel */}
         <AnimatePresence>
           {isExpanded && (

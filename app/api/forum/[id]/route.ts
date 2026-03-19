@@ -51,6 +51,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
           authorName: user?.name || body.author || "匿名",
           authorAvatar: user?.avatar || body.avatar || "",
           content: body.content,
+          ...(body.images?.length ? { images: body.images } : {}),
         },
       });
       return NextResponse.json({ data: comment, source: "db", timestamp: Date.now() });

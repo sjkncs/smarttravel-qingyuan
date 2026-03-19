@@ -27,9 +27,11 @@ function startNextServer() {
       return;
     }
 
-    const serverPath = path.join(__dirname, "../.next/standalone/server.js");
+    const serverPath = path.join(process.resourcesPath, ".next/standalone/server.js");
+    console.log("[Electron] Starting Next.js server from:", serverPath);
     nextServer = spawn("node", [serverPath], {
       env: { ...process.env, PORT: String(PORT), HOSTNAME: "127.0.0.1" },
+      cwd: path.join(process.resourcesPath, ".next/standalone"),
       stdio: "pipe",
     });
 

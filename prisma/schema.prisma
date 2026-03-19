@@ -38,6 +38,8 @@ model User {
   testimonials  Testimonial[]
   postVotes     PostVote[]
   commentLikes  CommentLike[]
+  supportTickets SupportTicket[]
+  supportAgent   SupportAgent?
 
   @@index([phone])
   @@index([email])
@@ -145,7 +147,9 @@ model ForumPost {
   votes        Int       @default(0)
   views        Int       @default(0)
   tags         String[]
+  images       String[]  // uploaded image URLs
   aiSummary    String?
+  aiImageUrl   String?   // AI-generated illustration
   pinned       Boolean   @default(false)
   published    Boolean   @default(true)
   createdAt    DateTime  @default(now())
@@ -175,6 +179,7 @@ model ForumComment {
   authorName String
   authorAvatar String @default("😊")
   content   String
+  images    String[]  // comment image URLs
   likes     Int      @default(0)
   createdAt DateTime @default(now())
 
@@ -330,4 +335,106 @@ model PlatformStat {
   suffix  String @default("")
   label   String
   labelEn String @default("")
+}
+
+// ═══════════════════════════════════
+// CUSTOMER SERVICE (智能客服 + 人工客服)
+// ═══════════════════════════════════
+
+enum TicketStatus {
+  PENDING      // 等待中
+  AI_HANDLING  // AI处理中
+  HUMAN_QUEUE  // 等待人工
+  HUMAN_ACTIVE // 人工处理中
+  RESOLVED     // 已解决
+  CLOSED       // 已关闭
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum MessageSender {
+  USER
+  AI
+  AGENT
+  SYSTEM
+}
+
+model SupportTicket {
+  id          String         @id @default(cuid())
+  ticketNo    String         @unique // T20260318-0001
+  userId      String?
+  user        User?          @relation(fields: [userId], references: [id])
+  agentId     String?
+  agent       SupportAgent?  @relation(fields: [agentId], references: [id])
+  subject     String         // 问题摘要
+  category    String         // account/payment/trip/village/map/forum/technical/other
+  status      TicketStatus   @default(AI_HANDLING)
+  priority    TicketPriority @default(NORMAL)
+  satisfaction Int?          // 1-5 用户满意度评分
+  resolvedBy  String?        // "ai" | "agent:{id}"
+  metadata    String?        // JSON: 设备信息/页面来源等
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  closedAt    DateTime?
+
+  messages    SupportMessage[]
+
+  @@index([userId])
+  @@index([agentId])
+  @@index([status])
+  @@index([ticketNo])
+  @@index([category])
+}
+
+model SupportMessage {
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender    MessageSender
+  content   String
+  metadata  String?       // JSON: RAG来源/意图/置信度
+  createdAt DateTime      @default(now())
+
+  @@index([ticketId])
+}
+
+model SupportAgent {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  displayName String
+  avatar      String?
+  department  String   @default("general") // general/technical/payment/vip
+  maxTickets  Int      @default(5)
+  isOnline    Boolean  @default(false)
+  lastActive  DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  tickets     SupportTicket[]
+
+  @@index([isOnline])
+  @@index([department])
+}
+
+model SupportFAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String   // account/payment/trip/village/map/forum/technical
+  tags      String[] // PostgreSQL array
+  hitCount  Int      @default(0)
+  helpful   Int      @default(0)
+  unhelpful Int      @default(0)
+  published Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([published])
 }
