@@ -44,50 +44,17 @@
 
 ## 🌟 项目亮点 | Highlights
 
-<table>
-<tr>
-<td width="50%">
+| 🤖 **多模型 AI 引擎** | 🎨 **AI 图片生成** |
+|:---|:---|
+| Claude / GPT / Gemini / DeepSeek / MiniMax 等 10+ 模型，自动选择最优 provider，三级降级保障可用性 | Gemini Image 模型实时生成帖子配图，支持 DALL-E / Pollinations.ai 多通道降级 |
 
-### 🤖 多模型 AI 引擎
-支持 **Claude / GPT / Gemini / DeepSeek / MiniMax** 等 10+ 模型，自动选择最优 provider，三级降级保障可用性
+| 💬 **智能客服系统** | 🏘️ **五大村落引擎** |
+|:---|:---|
+| SSE 流式对话 + RAG 知识库检索 + 意图分类，30+ 篇知识库文档覆盖清远旅游全场景 | 峰林小镇、千年瑶寨、上岳古村、油岭瑶寨、积庆里 — RAI/CPI/CBT 三维评估体系 |
 
-</td>
-<td width="50%">
-
-### 🎨 AI 图片生成
-基于 **Gemini Image** 模型实时生成帖子配图，支持 DALL-E / Pollinations.ai 多通道降级
-
-</td>
-</tr>
-<tr>
-<td>
-
-### 💬 智能客服系统
-SSE 流式对话 + RAG 知识库检索 + 意图分类，30+ 篇知识库文档覆盖清远旅游全场景
-
-</td>
-<td>
-
-### 🏘️ 五大村落引擎
-峰林小镇、千年瑶寨、上岳古村、油岭瑶寨、积庆里 — RAI/CPI/CBT 三维评估体系
-
-</td>
-</tr>
-<tr>
-<td>
-
-### 📱 全平台覆盖
-Web (Next.js) + Desktop (Electron) + Mobile (PWA)，一套代码多端运行
-
-</td>
-<td>
-
-### 🔐 生产级后端
-JWT 认证 + Prisma ORM (15 模型) + 支付网关 + SMS/邮件通知
-
-</td>
-</tr>
-</table>
+| 📱 **全平台覆盖** | 🔐 **生产级后端** |
+|:---|:---|
+| Web (Next.js) + Desktop (Electron) + Mobile (PWA)，一套代码多端运行 | JWT 认证 + Prisma ORM (15 模型) + 支付网关 + SMS/邮件通知 |
 
 ---
 
