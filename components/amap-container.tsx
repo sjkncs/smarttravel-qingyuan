@@ -23,10 +23,12 @@ declare global {
       getCenter(): { getLng(): number; getLat(): number };
       getZoom(): number;
       on(event: string, handler: (...args: unknown[]) => void): void;
-      add(overlay: unknown): void;
-      remove(overlay: unknown): void;
+      add(overlay: unknown | unknown[]): void;
+      remove(overlay: unknown | unknown[]): void;
       clearMap(): void;
       plugin(plugins: string[], callback: () => void): void;
+      setMapStyle(style: string): void;
+      getLayers(): unknown[];
     }
     class Marker {
       constructor(opts?: Record<string, unknown>);
@@ -34,6 +36,8 @@ declare global {
       getPosition(): { getLng(): number; getLat(): number };
       on(event: string, handler: (...args: unknown[]) => void): void;
       setLabel(opts: Record<string, unknown>): void;
+      show(): void;
+      hide(): void;
     }
     class InfoWindow {
       constructor(opts?: Record<string, unknown>);
@@ -47,6 +51,32 @@ declare global {
     class CircleMarker {
       constructor(opts?: Record<string, unknown>);
       setMap(map: Map | null): void;
+      show(): void;
+      hide(): void;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace TileLayer {
+      class Traffic {
+        constructor(opts?: Record<string, unknown>);
+        setMap(map: Map | null): void;
+        show(): void;
+        hide(): void;
+      }
+      class Satellite {
+        constructor(opts?: Record<string, unknown>);
+        setMap(map: Map | null): void;
+        show(): void;
+        hide(): void;
+      }
+    }
+    class HeatMap {
+      constructor(map: Map, opts?: Record<string, unknown>);
+      setDataSet(data: { data: { lng: number; lat: number; count: number }[]; max?: number }): void;
+      show(): void;
+      hide(): void;
+    }
+    class LngLat {
+      constructor(lng: number, lat: number);
     }
   }
 }
@@ -65,7 +95,7 @@ function loadAmapScript(key: string, securityCode?: string): Promise<void> {
     }
 
     const script = document.createElement("script");
-    script.src = `https://webapi.amap.com/maps?v=2.0&key=${key}&plugin=AMap.Geolocation,AMap.PlaceSearch,AMap.Geocoder,AMap.Weather,AMap.Driving,AMap.Walking`;
+    script.src = `https://webapi.amap.com/maps?v=2.0&key=${key}&plugin=AMap.Geolocation,AMap.PlaceSearch,AMap.Geocoder,AMap.Weather,AMap.Driving,AMap.Walking,AMap.HeatMap,AMap.TileLayer.Traffic,AMap.TileLayer.Satellite`;
     script.async = true;
     script.onload = () => resolve();
     script.onerror = () => reject(new Error("Failed to load Amap JS API"));
@@ -92,6 +122,7 @@ type AmapContainerProps = {
   onMapReady?: (map: AMap.Map) => void;
   onMarkerClick?: (marker: AmapMarkerData) => void;
   onLocationSuccess?: (lng: number, lat: number, address: string) => void;
+  onError?: (msg: string) => void;
   style?: React.CSSProperties;
 };
 
@@ -104,6 +135,7 @@ export default function AmapContainer({
   onMapReady,
   onMarkerClick,
   onLocationSuccess,
+  onError,
   style,
 }: AmapContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -125,6 +157,23 @@ export default function AmapContainer({
     }
 
     let destroyed = false;
+
+    // 拦截高德 JS API 的 console.error（如 USERKEY_PLAT_NOMATCH）
+    const origConsoleError = console.error;
+    const authErrorHandler = (...args: unknown[]) => {
+      const msg = args.map(String).join(" ");
+      if (msg.includes("USERKEY_PLAT_NOMATCH") || msg.includes("INVALID_USER_KEY")) {
+        if (!destroyed) {
+          const errMsg = "JS API Key 平台类型不匹配，请在高德控制台启用「Web端(JS API)」";
+          setError(errMsg);
+          setLoading(false);
+          onError?.(errMsg);
+        }
+        return; // 吞掉错误，不再抛到控制台
+      }
+      origConsoleError.apply(console, args);
+    };
+    console.error = authErrorHandler;
 
     loadAmapScript(jsKey, securityCode)
       .then(() => {
@@ -151,6 +200,7 @@ export default function AmapContainer({
         if (!destroyed) {
           setError(err.message);
           setLoading(false);
+          onError?.(err.message);
         }
       });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -78,30 +78,55 @@ export default function MapPage() {
   const [elevStats, setElevStats] = useState<{ maxElevation: number; minElevation: number; totalDistance: number; elevationGain: number } | null>(null);
 
   // Amap state
-  const hasAmapKey = !!process.env.NEXT_PUBLIC_AMAP_JS_KEY;
+  const [amapAvailable, setAmapAvailable] = useState(!!process.env.NEXT_PUBLIC_AMAP_JS_KEY);
   const [liveWeather, setLiveWeather] = useState<{ weather: string; temperature: string; humidity: string; winddirection: string; windpower: string } | null>(null);
   const [poiSearchResults, setPoiSearchResults] = useState<{ name: string; type: string; distance?: string; location: string }[]>([]);
-  const [mapInstance, setMapInstance] = useState<unknown>(null);
+  const mapRef = useRef<AMap.Map | null>(null);
+  const trafficLayerRef = useRef<AMap.TileLayer.Traffic | null>(null);
+  const satelliteLayerRef = useRef<AMap.TileLayer.Satellite | null>(null);
+  const heatmapRef = useRef<AMap.HeatMap | null>(null);
+  const safetyMarkersRef = useRef<AMap.CircleMarker[]>([]);
 
   // 村落标记数据 → AmapContainer markers
-  const villageMarkers: AmapMarkerData[] = allVillages.map((v) => ({
-    id: v.id,
-    name: locale === "zh" ? v.name : v.nameEn,
-    lng: v.longitude,
-    lat: v.latitude,
-    label: locale === "zh" ? v.name : v.nameEn,
-    infoContent: `<div style="padding:8px;min-width:180px">
-      <div style="font-weight:bold;margin-bottom:4px">${locale === "zh" ? v.name : v.nameEn}</div>
-      <div style="font-size:12px;color:#666;margin-bottom:6px">${v.location} · VSI: ${v.highlights.vsi}</div>
-      <div style="font-size:11px;color:#888">${v.latitude.toFixed(4)}°N, ${v.longitude.toFixed(4)}°E · ${v.elevation ?? "--"}m</div>
-    </div>`,
-  }));
+  const villageMarkers: AmapMarkerData[] = allVillages.map((v) => {
+    const vsi = v.highlights.vsi;
+    const vsiColor = vsi >= 90 ? "#059669" : vsi >= 80 ? "#d97706" : "#dc2626";
+    const vsiLabel = vsi >= 90 ? "安全" : vsi >= 80 ? "注意" : "警告";
+    const terrainInfo = v.terrain ? terrainLabels[v.terrain] : null;
+    return {
+      id: v.id,
+      name: locale === "zh" ? v.name : v.nameEn,
+      lng: v.longitude,
+      lat: v.latitude,
+      label: locale === "zh" ? v.name : v.nameEn,
+      infoContent: `<div style="padding:12px;min-width:220px;font-family:system-ui,sans-serif">
+        <div style="font-weight:700;font-size:15px;margin-bottom:6px">${locale === "zh" ? v.name : v.nameEn}</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+          <span style="background:${vsiColor};color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600">VSI ${vsi} · ${vsiLabel}</span>
+          ${terrainInfo ? `<span style="font-size:12px">${terrainInfo.icon} ${locale === "zh" ? terrainInfo.zh : terrainInfo.en}</span>` : ""}
+        </div>
+        <div style="font-size:12px;color:#666;margin-bottom:4px">📍 ${v.location}</div>
+        <div style="font-size:11px;color:#999;margin-bottom:8px">
+          ${v.latitude.toFixed(4)}°N, ${v.longitude.toFixed(4)}°E · 🏔 ${v.elevation ?? "--"}m
+        </div>
+        <div style="display:flex;gap:6px">
+          <a href="/villages/${v.id}" style="flex:1;text-align:center;padding:6px 0;background:#059669;color:#fff;border-radius:8px;font-size:12px;text-decoration:none;font-weight:600">查看详情</a>
+          <a href="/planner?village=${v.id}" style="flex:1;text-align:center;padding:6px 0;background:#f0fdf4;color:#059669;border:1px solid #059669;border-radius:8px;font-size:12px;text-decoration:none;font-weight:600">规划路线</a>
+        </div>
+      </div>`,
+    };
+  });
 
-  // 获取实时天气（通过后端代理）
+  // 获取实时天气 + 预报（通过后端代理）
+  const [liveForecast, setLiveForecast] = useState<{ date: string; dayweather: string; nightweather: string; daytemp: string; nighttemp: string }[]>([]);
   useEffect(() => {
     fetch("/api/map?action=weather&city=441802")
       .then((r) => r.json())
       .then((d) => { if (d.success && d.data?.live) setLiveWeather(d.data.live); })
+      .catch(() => {});
+    fetch("/api/map?action=weather&city=441802&type=all")
+      .then((r) => r.json())
+      .then((d) => { if (d.success && d.data?.forecasts) setLiveForecast(d.data.forecasts.slice(0, 3)); })
       .catch(() => {});
   }, []);
 
@@ -128,6 +153,88 @@ export default function MapPage() {
   };
 
   const activeCount = layers.filter((l) => l.active).length;
+
+  // ── 图层联动：监听 layers 变化，同步到 Amap 实例 ──
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !window.AMap) return;
+
+    const isActive = (id: string) => layers.find((l) => l.id === id)?.active ?? false;
+
+    // 路况信息
+    if (isActive("traffic")) {
+      if (!trafficLayerRef.current) {
+        trafficLayerRef.current = new window.AMap.TileLayer.Traffic({ autoRefresh: true, interval: 180 });
+        trafficLayerRef.current.setMap(map);
+      }
+      trafficLayerRef.current.show();
+    } else {
+      trafficLayerRef.current?.hide();
+    }
+
+    // 卫星/地形图层
+    if (isActive("terrain")) {
+      if (!satelliteLayerRef.current) {
+        satelliteLayerRef.current = new window.AMap.TileLayer.Satellite();
+        satelliteLayerRef.current.setMap(map);
+      }
+      satelliteLayerRef.current.show();
+    } else {
+      satelliteLayerRef.current?.hide();
+    }
+
+    // 人流热力图（用村落数据模拟热力点）
+    if (isActive("heatmap")) {
+      if (!heatmapRef.current) {
+        heatmapRef.current = new window.AMap.HeatMap(map, {
+          radius: 35,
+          opacity: [0, 0.8],
+          gradient: { 0.4: "blue", 0.6: "cyan", 0.7: "lime", 0.9: "yellow", 1.0: "red" },
+        });
+        const heatData = allVillages.map((v) => ({
+          lng: v.longitude,
+          lat: v.latitude,
+          count: Math.round(v.highlights.vsi * (Math.random() * 0.5 + 0.75)),
+        }));
+        heatmapRef.current.setDataSet({ data: heatData, max: 100 });
+      }
+      heatmapRef.current.show();
+    } else {
+      heatmapRef.current?.hide();
+    }
+
+    // 安全指数（VSI 彩色圆圈覆盖）
+    if (isActive("safety")) {
+      if (safetyMarkersRef.current.length === 0) {
+        allVillages.forEach((v) => {
+          const vsi = v.highlights.vsi;
+          const color = vsi >= 90 ? "#059669" : vsi >= 80 ? "#d97706" : "#dc2626";
+          const cm = new window.AMap.CircleMarker({
+            center: [v.longitude, v.latitude],
+            radius: 18,
+            strokeColor: color,
+            strokeWeight: 2,
+            strokeOpacity: 0.8,
+            fillColor: color,
+            fillOpacity: 0.25,
+            zIndex: 5,
+          });
+          cm.setMap(map);
+          safetyMarkersRef.current.push(cm);
+        });
+      }
+      safetyMarkersRef.current.forEach((cm) => cm.show());
+    } else {
+      safetyMarkersRef.current.forEach((cm) => cm.hide());
+    }
+
+    // 地图样式：地形开启时用卫星样式，否则恢复白色
+    if (isActive("terrain")) {
+      map.setMapStyle("amap://styles/normal");
+    } else {
+      map.setMapStyle("amap://styles/whitesmoke");
+    }
+  }, [layers, allVillages]);
 
   // Geolocation
   const requestLocation = useCallback(() => {
@@ -186,7 +293,7 @@ export default function MapPage() {
               <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm overflow-hidden">
                 <div className="relative h-[500px]">
                   {/* 高德地图实例 — 有 Key 时渲染真实地图，否则 fallback SVG */}
-                  {hasAmapKey ? (
+                  {amapAvailable ? (
                     <AmapContainer
                       className="w-full h-full"
                       style={{ width: "100%", height: "100%" }}
@@ -194,12 +301,13 @@ export default function MapPage() {
                       zoom={10}
                       markers={villageMarkers}
                       showGeolocation
-                      onMapReady={(map) => setMapInstance(map)}
+                      onMapReady={(map) => { mapRef.current = map; }}
                       onMarkerClick={(marker) => setSelectedMarker(marker.id)}
                       onLocationSuccess={(lng, lat, addr) => {
                         setUserLocation({ lat, lng });
                         setNearbyList(getNearbyVillages(lat, lng, 300));
                       }}
+                      onError={() => setAmapAvailable(false)}
                     />
                   ) : (
                     <div className="w-full h-full bg-linear-to-br from-emerald-100 via-emerald-50 to-sky-50 dark:from-emerald-900/30 dark:via-emerald-800/20 dark:to-sky-900/20 flex items-center justify-center">
@@ -287,7 +395,7 @@ export default function MapPage() {
                   )}
 
                   {/* 定位按钮（无高德 Key 时 fallback） */}
-                  {!hasAmapKey && (
+                  {!amapAvailable && (
                     <button
                       onClick={requestLocation}
                       disabled={locating}
@@ -339,9 +447,21 @@ export default function MapPage() {
                 <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
                   <Cloud className="h-4 w-4 text-sky-500" />
                   {locale === "zh" ? "天气预报" : "Weather"}
+                  {liveForecast.length > 0 && <span className="text-[10px] text-emerald-600 font-medium ml-auto">● 实时</span>}
                 </h3>
                 <div className="flex gap-2">
-                  {weatherData.forecast.map((day) => (
+                  {liveForecast.length > 0 ? liveForecast.map((day, i) => {
+                    const w = day.dayweather;
+                    const icon = w.includes("晴") ? "☀️" : w.includes("雨") ? "🌧" : w.includes("阴") ? "☁️" : "⛅";
+                    const label = i === 0 ? (locale === "zh" ? "今天" : "Today") : i === 1 ? (locale === "zh" ? "明天" : "Tomorrow") : (locale === "zh" ? "后天" : "Day 3");
+                    return (
+                      <div key={day.date} className="flex-1 text-center p-2 rounded-lg bg-card border border-border">
+                        <div className="text-xs text-muted-foreground">{label}</div>
+                        <div className="text-xl my-1">{icon}</div>
+                        <div className="text-xs font-medium">{day.daytemp}°C</div>
+                      </div>
+                    );
+                  }) : weatherData.forecast.map((day) => (
                     <div key={day.day} className="flex-1 text-center p-2 rounded-lg bg-card border border-border">
                       <div className="text-xs text-muted-foreground">{locale === "zh" ? day.day : day.dayEn}</div>
                       <div className="text-xl my-1">{day.icon}</div>
