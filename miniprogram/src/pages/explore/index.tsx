@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, Input, ScrollView, Image } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { getVillages } from '@/utils/api';
+import { getVillageImage } from '@/utils/images';
 import './index.scss';
 
 interface Village {
@@ -95,11 +96,7 @@ export default function ExplorePage() {
               onClick={() => Taro.navigateTo({ url: `/pages/village/detail?slug=${village.slug}` })}
             >
               <View className='card-img-wrap'>
-                {village.image ? (
-                  <Image src={village.image} className='card-img' mode='aspectFill' />
-                ) : (
-                  <View className='card-img-placeholder'>🏘️</View>
-                )}
+                <Image src={getVillageImage(village.slug || village.id)} className='card-img' mode='aspectFill' />
               </View>
               <View className='card-body'>
                 <View className='card-header'>

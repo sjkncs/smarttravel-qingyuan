@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro, { useShareAppMessage, usePullDownRefresh } from '@tarojs/taro';
 import { getVillages } from '@/utils/api';
+import { BANNER_IMAGES, getVillageImage, ACTIVITY_IMAGES } from '@/utils/images';
 import './index.scss';
 
 interface Village {
@@ -44,10 +45,12 @@ export default function IndexPage() {
   useEffect(() => { loadData(); }, []);
 
   const quickActions = [
-    { icon: '🎫', label: '扫码购票', action: () => Taro.scanCode({}) },
     { icon: '🤖', label: 'AI规划', action: () => Taro.switchTab({ url: '/pages/ai/index' }) },
     { icon: '📍', label: '附近村落', action: () => Taro.switchTab({ url: '/pages/explore/index' }) },
+    { icon: '�️', label: '地图导航', action: () => Taro.navigateTo({ url: '/pages/map/index' }) },
     { icon: '🛒', label: '特产商城', action: () => Taro.navigateTo({ url: '/pages/shop/index' }) },
+    { icon: '🗓️', label: '行程规划', action: () => Taro.navigateTo({ url: '/pages/planner/index' }) },
+    { icon: '🎧', label: '在线客服', action: () => Taro.navigateTo({ url: '/pages/support/index' }) },
   ];
 
   const goToVillage = (slug: string) => {
@@ -81,13 +84,37 @@ export default function IndexPage() {
 
       {/* Banner */}
       <View className='banner'>
-        <View className='banner-content'>
-          <Text className='banner-title'>🏔️ 清远乡村旅行</Text>
+        <Image src={BANNER_IMAGES.main} className='banner-bg' mode='aspectFill' />
+        <View className='banner-overlay'>
+          <Text className='banner-title'>清远乡村旅行</Text>
           <Text className='banner-desc'>AI智能推荐 · 瑶族文化 · 田园风光</Text>
           <View className='banner-btn' onClick={() => Taro.switchTab({ url: '/pages/ai/index' })}>
             <Text className='banner-btn-text'>AI规划行程 →</Text>
           </View>
         </View>
+      </View>
+
+      {/* Hot Activities */}
+      <View className='section'>
+        <View className='section-header'>
+          <Text className='section-title'>热门活动</Text>
+        </View>
+        <ScrollView scrollX className='activity-scroll'>
+          {[
+            { key: 'rafting', label: '竹筏漂流', img: ACTIVITY_IMAGES.rafting },
+            { key: 'hiking', label: '峰林徒步', img: ACTIVITY_IMAGES.hiking },
+            { key: 'hotspring', label: '温泉养生', img: ACTIVITY_IMAGES.hotspring },
+            { key: 'tea', label: '茶园采茶', img: ACTIVITY_IMAGES.tea },
+            { key: 'festival', label: '瑶族盛会', img: ACTIVITY_IMAGES.festival },
+          ].map(act => (
+            <View key={act.key} className='activity-card' onClick={() => Taro.switchTab({ url: '/pages/explore/index' })}>
+              <Image src={act.img} className='activity-img' mode='aspectFill' />
+              <View className='activity-label'>
+                <Text className='activity-text'>{act.label}</Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
       </View>
 
       {/* Nearby Recommendations */}
@@ -108,11 +135,7 @@ export default function IndexPage() {
             {villages.slice(0, 6).map(village => (
               <View key={village.id} className='village-card' onClick={() => goToVillage(village.slug)}>
                 <View className='village-img-wrap'>
-                  {village.image ? (
-                    <Image src={village.image} className='village-img' mode='aspectFill' />
-                  ) : (
-                    <View className='village-img-placeholder'>🏘️</View>
-                  )}
+                  <Image src={getVillageImage(village.slug || village.id)} className='village-img' mode='aspectFill' />
                   <View className='village-rai'>RAI {village.raiScore}</View>
                 </View>
                 <View className='village-info'>

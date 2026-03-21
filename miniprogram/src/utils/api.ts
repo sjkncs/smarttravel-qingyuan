@@ -136,6 +136,58 @@ export async function wxLogin() {
   } as any);
 }
 
+// ── 客服支持 API ──
+export async function chatWithSupport(
+  messages: { role: string; content: string }[],
+  ticketId?: string | null
+) {
+  return request('/api/support/chat', {
+    method: 'POST',
+    data: { messages, ticketId },
+  } as any);
+}
+
+export async function createTicket(data: {
+  subject: string; category: string; content: string;
+}) {
+  return request('/api/support/ticket', {
+    method: 'POST',
+    data,
+    showLoading: true,
+  } as any);
+}
+
+export async function getMyTickets() {
+  return request('/api/support/ticket?my=true');
+}
+
+// ── 收藏 API ──
+export async function toggleFavorite(villageId: string) {
+  return request('/api/favorites', {
+    method: 'POST',
+    data: { villageId },
+  } as any);
+}
+
+export async function getFavorites() {
+  return request('/api/favorites');
+}
+
+// ── 订单 API ──
+export async function getMyOrders() {
+  return request('/api/orders?my=true');
+}
+
+export async function createOrder(data: {
+  productId: number; quantity: number;
+}) {
+  return request('/api/orders', {
+    method: 'POST',
+    data,
+    showLoading: true,
+  } as any);
+}
+
 export default {
   getVillages,
   getVillageDetail,
@@ -148,6 +200,13 @@ export default {
   sendSmsCode,
   getUserProfile,
   wxLogin,
+  chatWithSupport,
+  createTicket,
+  getMyTickets,
+  toggleFavorite,
+  getFavorites,
+  getMyOrders,
+  createOrder,
   setToken,
   getToken,
 };

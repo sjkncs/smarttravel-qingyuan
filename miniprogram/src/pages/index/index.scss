@@ -14,33 +14,53 @@
 .header-bell { font-size: 36px; padding: 10px; }
 
 .quick-actions {
-  display: flex; justify-content: space-around;
-  margin: -30px 24px 20px; padding: 24px 12px;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  margin: -30px 24px 20px; padding: 20px 12px;
   background: #fff; border-radius: 24px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  gap: 8px;
 }
-.action-item { display: flex; flex-direction: column; align-items: center; }
+.action-item { display: flex; flex-direction: column; align-items: center; padding: 8px 0; }
 .action-icon {
-  width: 80px; height: 80px; border-radius: 20px;
+  width: 72px; height: 72px; border-radius: 18px;
   background: #d1fae5; display: flex; align-items: center;
-  justify-content: center; font-size: 36px; margin-bottom: 8px;
+  justify-content: center; font-size: 32px; margin-bottom: 6px;
 }
-.action-label { font-size: 22px; color: #333; }
+.action-label { font-size: 20px; color: #333; }
 
 .banner {
   margin: 0 24px 24px; border-radius: 24px;
-  background: linear-gradient(135deg, #059669, #10b981);
-  overflow: hidden;
+  overflow: hidden; position: relative; height: 280px;
 }
-.banner-content { padding: 30px; color: #fff; }
-.banner-title { font-size: 32px; font-weight: bold; display: block; }
+.banner-bg { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+.banner-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 30px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.55));
+  color: #fff;
+}
+.banner-title { font-size: 36px; font-weight: bold; display: block; }
 .banner-desc { font-size: 22px; opacity: 0.9; margin-top: 8px; display: block; }
 .banner-btn {
-  margin-top: 20px; display: inline-block;
-  background: rgba(255,255,255,0.2); padding: 10px 24px;
-  border-radius: 30px;
+  margin-top: 16px; display: inline-block;
+  background: rgba(255,255,255,0.25); padding: 10px 24px;
+  border-radius: 30px; backdrop-filter: blur(4px);
 }
 .banner-btn-text { font-size: 24px; color: #fff; }
+
+.activity-scroll { white-space: nowrap; width: 100%; }
+.activity-card {
+  display: inline-block; width: 220px; height: 150px;
+  margin-right: 12px; border-radius: 16px; overflow: hidden;
+  position: relative; vertical-align: top;
+}
+.activity-img { width: 100%; height: 100%; }
+.activity-label {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 10px 14px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.5));
+}
+.activity-text { font-size: 22px; font-weight: 600; color: #fff; }
 
 .section { margin: 0 24px 24px; }
 .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }

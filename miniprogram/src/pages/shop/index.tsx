@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
+import { getProductImage } from '@/utils/images';
 import './index.scss';
 
 interface Product {
@@ -18,32 +19,32 @@ interface Product {
 const mockProducts: Product[] = [
   {
     id: 1, name: '英德红茶·金毫', desc: '英德核心产区，一芽一叶手工采摘',
-    price: 128, originalPrice: 168, image: '', village: '积庆里',
+    price: 128, originalPrice: 168, image: getProductImage(1), village: '积庆里',
     tags: ['非遗工艺', '有机认证'], sales: 2341,
   },
   {
     id: 2, name: '连南瑶族刺绣手提包', desc: '瑶族阿婆手工刺绣，传承千年技艺',
-    price: 298, image: '', village: '油岭村',
+    price: 298, image: getProductImage(2), village: '油岭村',
     tags: ['非遗手工', '限量'], sales: 856,
   },
   {
     id: 3, name: '阳山西洋菜干', desc: '阳山高山种植，天然晾晒',
-    price: 35, originalPrice: 45, image: '', village: '阳山',
+    price: 35, originalPrice: 45, image: getProductImage(3), village: '阳山',
     tags: ['原产地直发'], sales: 5230,
   },
   {
     id: 4, name: '清远麻鸡礼盒装', desc: '正宗清远麻鸡，走地放养180天',
-    price: 199, originalPrice: 258, image: '', village: '清城区',
+    price: 199, originalPrice: 258, image: getProductImage(4), village: '清城区',
     tags: ['地理标志', '冷链直达'], sales: 3891,
   },
   {
     id: 5, name: '连州水晶梨', desc: '连州高山水晶梨，汁多甜脆',
-    price: 68, image: '', village: '连州',
+    price: 68, image: getProductImage(5), village: '连州',
     tags: ['当季鲜果', '产地直发'], sales: 1567,
   },
   {
     id: 6, name: '瑶族长鼓挂饰', desc: '微缩长鼓工艺品，瑶族文化纪念',
-    price: 58, image: '', village: '南岗村',
+    price: 58, image: getProductImage(6), village: '南岗村',
     tags: ['文创', '伴手礼'], sales: 923,
   },
 ];
@@ -93,13 +94,7 @@ export default function ShopPage() {
         {mockProducts.map(product => (
           <View key={product.id} className='product-card' onClick={() => handleBuy(product)}>
             <View className='product-img'>
-              {product.image ? (
-                <Image src={product.image} className='img' mode='aspectFill' />
-              ) : (
-                <View className='img-placeholder'>
-                  <Text className='placeholder-icon'>🎁</Text>
-                </View>
-              )}
+              <Image src={product.image} className='img' mode='aspectFill' />
               {product.originalPrice && (
                 <View className='discount-badge'>
                   <Text className='discount-text'>

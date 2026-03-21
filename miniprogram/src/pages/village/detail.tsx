@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import Taro, { useRouter, useShareAppMessage } from '@tarojs/taro';
 import { getVillageDetail } from '@/utils/api';
+import { getVillageImage } from '@/utils/images';
 import './detail.scss';
 
 interface VillageData {
@@ -71,11 +72,7 @@ export default function VillageDetailPage() {
     <View className='detail-page'>
       {/* Hero Image */}
       <View className='hero'>
-        {village.image ? (
-          <Image src={village.image} className='hero-img' mode='aspectFill' />
-        ) : (
-          <View className='hero-placeholder'>🏘️</View>
-        )}
+        <Image src={getVillageImage(village.slug)} className='hero-img' mode='aspectFill' />
         <View className='hero-overlay'>
           <Text className='hero-name'>{village.name}</Text>
           <Text className='hero-name-en'>{village.nameEn}</Text>

@@ -7,6 +7,9 @@ export default defineAppConfig({
     'pages/profile/index',
     'pages/village/detail',
     'pages/shop/index',
+    'pages/support/index',
+    'pages/planner/index',
+    'pages/map/index',
   ],
   tabBar: {
     color: '#999999',

@@ -13,11 +13,11 @@ interface UserInfo {
 }
 
 const menuItems = [
-  { icon: '📋', label: '我的订单', url: '' },
-  { icon: '🗺️', label: '我的行程', url: '' },
-  { icon: '👣', label: '旅行足迹', url: '' },
+  { icon: '📋', label: '我的订单', url: '/pages/shop/index' },
+  { icon: '🗺️', label: '我的行程', url: '/pages/planner/index' },
+  { icon: '�', label: '地图导航', url: '/pages/map/index' },
   { icon: '❤️', label: '我的收藏', url: '' },
-  { icon: '🎫', label: '优惠券', url: '' },
+  { icon: '�', label: '在线客服', url: '/pages/support/index' },
   { icon: '📝', label: '我的帖子', url: '' },
   { icon: '⚙️', label: '设置', url: '' },
 ];
