@@ -186,7 +186,7 @@ export default function AmapContainer({
           center,
           resizeEnable: true,
           viewMode: "2D",
-          mapStyle: "amap://styles/whitesmoke",
+          mapStyle: "amap://styles/dark",
         });
 
         mapRef.current = map;

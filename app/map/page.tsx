@@ -330,11 +330,11 @@ export default function MapPage() {
       safetyMarkersRef.current.forEach((cm) => cm.hide());
     }
 
-    // 地图样式：地形开启时用卫星样式，否则恢复白色
+    // 地图样式：地形开启时用卫星样式，否则恢复暗色
     if (isActive("terrain")) {
       map.setMapStyle("amap://styles/normal");
     } else {
-      map.setMapStyle("amap://styles/whitesmoke");
+      map.setMapStyle("amap://styles/dark");
     }
   }, [layers, allVillages]);
 
