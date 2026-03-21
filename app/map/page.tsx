@@ -429,7 +429,7 @@ export default function MapPage() {
                             <motion.div
                               key={v.id}
                               className="absolute cursor-pointer"
-                              style={{ left: `${Math.min(Math.max(x / 8, 5), 90)}%`, top: `${Math.min(Math.max(y / 5, 10), 85)}%` }}
+                              style={{ left: `${Math.min(Math.max(x / 8, 5), 90)}%`, top: `${Math.min(Math.max(y / 5, 10), 85)}%` } as React.CSSProperties}
                               whileHover={{ scale: 1.2 }}
                               onClick={() => setSelectedMarker(selectedMarker === v.id ? null : v.id)}
                             >
