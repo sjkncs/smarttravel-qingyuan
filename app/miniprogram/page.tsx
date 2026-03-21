@@ -6,7 +6,8 @@ import {
   Smartphone, QrCode, MapPin, MessageCircle, Camera, Compass,
   Ticket, Star, Users, Zap, Shield, Globe, ChevronRight,
   Scan, Navigation, Heart, ShoppingBag, Bell, Home,
-  Search, User, Map, BookOpen,
+  Search, User, Map, BookOpen, MessageSquare, Headphones,
+  CalendarDays, Route, ThumbsUp, Eye,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/page-header";
@@ -16,58 +17,76 @@ import Link from "next/link";
 
 const miniProgramFeatures = [
   {
-    icon: MapPin,
-    title: "智能导览",
-    titleEn: "Smart Guide",
-    desc: "AR实景导航 + AI语音讲解，自动识别景点并推送文化故事",
-    descEn: "AR navigation + AI voice guide, auto-detect spots with cultural stories",
-    color: "text-emerald-600",
-    bg: "bg-emerald-50 dark:bg-emerald-900/30",
-  },
-  {
-    icon: Ticket,
-    title: "一码通行",
-    titleEn: "One-Code Pass",
-    desc: "景区门票、民宿预订、体验活动一站式购买，扫码即入",
-    descEn: "Tickets, homestay booking, activities in one place, scan to enter",
-    color: "text-sky-600",
-    bg: "bg-sky-50 dark:bg-sky-900/30",
-  },
-  {
-    icon: Camera,
-    title: "AI旅拍",
-    titleEn: "AI Photo",
-    desc: "AI生成清远风格滤镜，一键生成旅行海报分享朋友圈",
-    descEn: "AI Qingyuan-style filters, generate travel posters for sharing",
-    color: "text-violet-600",
-    bg: "bg-violet-50 dark:bg-violet-900/30",
-  },
-  {
     icon: Compass,
     title: "村落发现",
     titleEn: "Village Discovery",
-    desc: "基于位置的附近村落推荐，RAI可达性指数实时展示",
-    descEn: "Location-based village recommendations with real-time RAI scores",
-    color: "text-amber-600",
-    bg: "bg-amber-50 dark:bg-amber-900/30",
+    desc: "基于位置的附近村落推荐，RAI/CPI/VSI三维评分实时展示",
+    descEn: "Location-based village recommendations with real-time RAI/CPI/VSI scores",
+    color: "text-emerald-600",
+    bg: "bg-emerald-50 dark:bg-emerald-900/30",
   },
   {
     icon: MessageCircle,
     title: "AI旅行助手",
     titleEn: "AI Travel Assistant",
-    desc: "语音对话式行程规划，支持粤语、普通话、英语",
-    descEn: "Voice-based trip planning in Cantonese, Mandarin, and English",
-    color: "text-rose-600",
-    bg: "bg-rose-50 dark:bg-rose-900/30",
+    desc: "对话式智能问答，推荐村落、规划路线、解答旅行问题",
+    descEn: "Conversational AI for village recommendations, route planning, and travel Q&A",
+    color: "text-sky-600",
+    bg: "bg-sky-50 dark:bg-sky-900/30",
+  },
+  {
+    icon: CalendarDays,
+    title: "AI行程规划",
+    titleEn: "AI Trip Planner",
+    desc: "输入天数、人数、偏好，AI自动生成专属清远旅行行程",
+    descEn: "Enter days, travelers, preferences — AI generates a custom Qingyuan itinerary",
+    color: "text-violet-600",
+    bg: "bg-violet-50 dark:bg-violet-900/30",
   },
   {
     icon: ShoppingBag,
     title: "特产商城",
     titleEn: "Local Products",
-    desc: "清远特产直购，英德红茶、连州水晶梨、清远鸡产地直发",
-    descEn: "Buy local products directly: Yingde tea, Lianzhou pear, Qingyuan chicken",
+    desc: "清远特产直购，英德红茶、连州水晶梨、瑶族手工艺品产地直发",
+    descEn: "Buy local products: Yingde tea, Lianzhou pear, Yao handicrafts — direct from source",
     color: "text-orange-600",
     bg: "bg-orange-50 dark:bg-orange-900/30",
+  },
+  {
+    icon: MessageSquare,
+    title: "社区论坛",
+    titleEn: "Community Forum",
+    desc: "旅行攻略分享、村落点评、美食推荐，AI智能审核保障社区安全",
+    descEn: "Share travel tips, village reviews, food guides — AI-moderated for safety",
+    color: "text-rose-600",
+    bg: "bg-rose-50 dark:bg-rose-900/30",
+  },
+  {
+    icon: Map,
+    title: "地图导航",
+    titleEn: "Map Navigation",
+    desc: "清远村落分布地图，一键导航到目的地，支持腾讯地图SDK",
+    descEn: "Village distribution map with one-tap navigation via Tencent Maps SDK",
+    color: "text-amber-600",
+    bg: "bg-amber-50 dark:bg-amber-900/30",
+  },
+  {
+    icon: Headphones,
+    title: "在线客服",
+    titleEn: "Online Support",
+    desc: "AI智能客服7×24在线，复杂问题自动转接人工，满意度评价",
+    descEn: "AI support 24/7, auto-escalation to human agents, satisfaction ratings",
+    color: "text-cyan-600",
+    bg: "bg-cyan-50 dark:bg-cyan-900/30",
+  },
+  {
+    icon: MapPin,
+    title: "村落详情",
+    titleEn: "Village Details",
+    desc: "高清实景图片、RAI评分、推荐活动、交通指南、温馨提示一应俱全",
+    descEn: "HD photos, RAI scores, activities, transport guide, and tips — all in one place",
+    color: "text-teal-600",
+    bg: "bg-teal-50 dark:bg-teal-900/30",
   },
 ];
 
@@ -78,14 +97,14 @@ const miniProgramScreens = [
     labelEn: "Home",
     icon: Home,
     content: {
-      greeting: "你好，旅行者 👋",
+      greeting: "你好，旅行者",
       weather: "清远 · 晴 28°C",
       cards: [
         { title: "千年瑶寨", tag: "热门", distance: "2.5km" },
         { title: "英西峰林", tag: "推荐", distance: "15km" },
         { title: "积庆里茶园", tag: "新上", distance: "8km" },
       ],
-      quickActions: ["扫码购票", "AI规划", "附近村落", "特产商城"],
+      quickActions: ["AI规划", "附近村落", "地图导航", "特产商城", "行程规划", "在线客服"],
     },
   },
   {
@@ -110,9 +129,23 @@ const miniProgramScreens = [
     icon: Zap,
     content: {
       messages: [
-        { role: "ai", text: "你好！我是智游清远AI助手，有什么可以帮你的？" },
+        { role: "ai", text: "你好！我是智游清远AI助手，我可以帮你推荐村落、规划行程、解答旅行问题、介绍瑶族/壮族文化。" },
         { role: "user", text: "推荐一个适合带小朋友去的村落" },
         { role: "ai", text: "推荐峰林小镇！VSI安全指数92分，有温泉亲子套餐，路况平坦适合婴儿车。距你当前位置约15分钟车程。" },
+      ],
+    },
+  },
+  {
+    id: "forum",
+    label: "社区",
+    labelEn: "Forum",
+    icon: MessageSquare,
+    content: {
+      categories: ["全部", "攻略", "美食", "求助", "活动"],
+      posts: [
+        { title: "英西峰林徒步攻略", author: "山野旅人", votes: 128, views: 2340, comments: 36, type: "攻略" },
+        { title: "南岗瑶寨美食地图", author: "美食探家", votes: 95, views: 1820, comments: 22, type: "美食" },
+        { title: "清远温泉度假体验分享", author: "泡泡鱼", votes: 76, views: 1560, comments: 18, type: "攻略" },
       ],
     },
   },
@@ -129,7 +162,7 @@ const miniProgramScreens = [
         { label: "收藏", value: "28" },
         { label: "勋章", value: "6" },
       ],
-      menu: ["我的订单", "我的行程", "旅行足迹", "优惠券", "设置"],
+      menu: ["我的订单", "我的行程", "地图导航", "我的收藏", "在线客服", "我的帖子", "设置"],
     },
   },
 ];
@@ -192,14 +225,16 @@ export default function MiniProgramPage() {
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-4 gap-2">
+                        <div className="grid grid-cols-3 gap-2">
                           {(currentScreen.content.quickActions as string[]).map((action) => (
                             <div key={action} className="text-center p-2 rounded-xl bg-white dark:bg-gray-800 shadow-sm">
                               <div className="h-7 w-7 mx-auto mb-1 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                                {action === "扫码购票" && <Scan className="h-3.5 w-3.5 text-emerald-600" />}
                                 {action === "AI规划" && <Zap className="h-3.5 w-3.5 text-emerald-600" />}
                                 {action === "附近村落" && <Navigation className="h-3.5 w-3.5 text-emerald-600" />}
+                                {action === "地图导航" && <Map className="h-3.5 w-3.5 text-emerald-600" />}
                                 {action === "特产商城" && <ShoppingBag className="h-3.5 w-3.5 text-emerald-600" />}
+                                {action === "行程规划" && <CalendarDays className="h-3.5 w-3.5 text-emerald-600" />}
+                                {action === "在线客服" && <Headphones className="h-3.5 w-3.5 text-emerald-600" />}
                               </div>
                               <span className="text-[9px]">{action}</span>
                             </div>
@@ -289,6 +324,41 @@ export default function MiniProgramPage() {
                       </div>
                     )}
 
+                    {activeScreen === "forum" && (
+                      <div className="p-4 space-y-3">
+                        <div className="flex gap-1.5 overflow-x-auto pb-1">
+                          {((currentScreen.content as any).categories as string[]).map((cat: string, i: number) => (
+                            <span key={cat} className={`text-[9px] px-2.5 py-1 rounded-full whitespace-nowrap ${i === 0 ? "bg-emerald-600 text-white" : "bg-white dark:bg-gray-800 shadow-sm"}`}>
+                              {cat}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="space-y-2">
+                          {((currentScreen.content as any).posts as { title: string; author: string; votes: number; views: number; comments: number; type: string }[]).map((post) => (
+                            <div key={post.title} className="p-3 rounded-xl bg-white dark:bg-gray-800 shadow-sm">
+                              <div className="flex items-center gap-1.5 mb-1.5">
+                                <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600">{post.type}</span>
+                                <span className="text-xs font-bold flex-1 truncate">{post.title}</span>
+                              </div>
+                              <div className="flex items-center gap-1 mb-2">
+                                <User className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-[9px] text-muted-foreground">{post.author}</span>
+                              </div>
+                              <div className="flex items-center gap-3 text-[9px] text-muted-foreground">
+                                <span className="flex items-center gap-0.5"><ThumbsUp className="h-2.5 w-2.5" /> {post.votes}</span>
+                                <span className="flex items-center gap-0.5"><Eye className="h-2.5 w-2.5" /> {post.views}</span>
+                                <span className="flex items-center gap-0.5"><MessageSquare className="h-2.5 w-2.5" /> {post.comments}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex items-center justify-center gap-1 p-2 rounded-xl bg-emerald-600 text-white">
+                          <MessageSquare className="h-3.5 w-3.5" />
+                          <span className="text-[10px] font-medium">发布帖子</span>
+                        </div>
+                      </div>
+                    )}
+
                     {activeScreen === "profile" && (
                       <div className="p-4 space-y-3">
                         <div className="text-center py-4">
@@ -357,8 +427,8 @@ export default function MiniProgramPage() {
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {locale === "zh"
-                    ? "无需下载APP，微信扫码即开即用。集智能导览、门票预订、AI行程规划、特产商城于一体，打造轻量化的清远乡村旅行超级入口。支持离线地图和弱网模式，深山村落也能流畅使用。"
-                    : "No app download needed. Scan to use instantly on WeChat. An all-in-one lightweight entry for Qingyuan village travel with smart guide, booking, AI planning, and local products. Supports offline maps and weak-network mode."}
+                    ? "无需下载APP，微信扫码即开即用。集村落发现、AI智能助手、行程规划、特产商城、社区论坛、地图导航、在线客服于一体，打造轻量化的清远乡村旅行超级入口。"
+                    : "No app download needed. Scan to use instantly on WeChat. An all-in-one entry for Qingyuan village travel with AI assistant, trip planner, local products, community forum, map navigation, and online support."}
                 </p>
               </div>
 
@@ -402,10 +472,10 @@ export default function MiniProgramPage() {
                 {locale === "zh" ? "核心功能" : "Core Features"}
               </h2>
               <p className="text-sm text-muted-foreground">
-                {locale === "zh" ? "六大模块，覆盖旅行全链路" : "Six modules covering the entire travel journey"}
+                {locale === "zh" ? "八大模块，覆盖旅行全链路" : "Eight modules covering the entire travel journey"}
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {miniProgramFeatures.map((feature, i) => (
                 <motion.div
                   key={feature.title}
