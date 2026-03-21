@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Smartphone, QrCode, MapPin, MessageCircle, Camera, Compass,
-  Ticket, Star, Users, Zap, Shield, Globe, ChevronRight,
-  Scan, Navigation, Heart, ShoppingBag, Bell, Home,
+  Smartphone, QrCode, MapPin, MessageCircle, Compass,
+  Star, Users, Zap, Shield, Globe, ChevronRight, ChevronDown,
+  Navigation, ShoppingBag, Bell, Home, Check, ArrowRight,
   Search, User, Map, BookOpen, MessageSquare, Headphones,
-  CalendarDays, Route, ThumbsUp, Eye,
+  CalendarDays, ThumbsUp, Eye, Layers, Lock, Wifi, WifiOff,
+  BarChart3, TrendingUp, Clock, Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/page-header";
@@ -176,6 +177,38 @@ const techSpecs = [
   { label: "审核", labelEn: "Moderation", value: "五层 AI 过滤 + DeepSeek 语义" },
 ];
 
+const userJourneySteps = [
+  { icon: QrCode, title: "扫码进入", titleEn: "Scan & Enter", desc: "微信扫码即开即用，无需下载", descEn: "Scan with WeChat, no download needed" },
+  { icon: Compass, title: "发现村落", titleEn: "Discover Villages", desc: "浏览RAI/CPI/VSI评分，选择目的地", descEn: "Browse RAI/CPI/VSI scores, pick destination" },
+  { icon: CalendarDays, title: "AI规划行程", titleEn: "AI Plan Trip", desc: "输入偏好，AI生成专属行程", descEn: "Input preferences, AI generates itinerary" },
+  { icon: Map, title: "导航出发", titleEn: "Navigate & Go", desc: "一键导航，实时路线指引", descEn: "One-tap navigation with real-time routing" },
+  { icon: MessageSquare, title: "分享体验", titleEn: "Share Experience", desc: "在社区论坛发布攻略和点评", descEn: "Post guides and reviews in community forum" },
+];
+
+const advantages = [
+  { icon: Zap, title: "即开即用", titleEn: "Instant Access", desc: "无需下载安装，微信扫码秒开，首屏加载 < 1.5s", descEn: "No download needed, scan to open in < 1.5s" },
+  { icon: Layers, title: "轻量高效", titleEn: "Lightweight", desc: "包体仅 2MB，运行内存占用极低，低端机流畅运行", descEn: "Only 2MB package, smooth on low-end devices" },
+  { icon: WifiOff, title: "弱网可用", titleEn: "Offline Ready", desc: "核心数据本地缓存，深山无信号区域仍可查看已加载内容", descEn: "Core data cached locally, works in no-signal areas" },
+  { icon: Shield, title: "隐私安全", titleEn: "Privacy Safe", desc: "遵循微信隐私协议，敏感数据端侧加密，不滥用权限", descEn: "WeChat privacy compliant, on-device encryption" },
+  { icon: Globe, title: "跨端一致", titleEn: "Cross-Platform", desc: "Taro框架编译，微信/支付宝/H5 多端一致体验", descEn: "Taro compiled for WeChat, Alipay, H5 consistency" },
+  { icon: TrendingUp, title: "持续进化", titleEn: "Continuous Updates", desc: "OTA静默更新，新功能无感上线，无需用户手动操作", descEn: "OTA silent updates, new features deploy seamlessly" },
+];
+
+const performanceMetrics = [
+  { value: "1.2s", label: "冷启动", labelEn: "Cold Start" },
+  { value: "98.5%", label: "接口成功率", labelEn: "API Success" },
+  { value: "< 50MB", label: "运行内存", labelEn: "Runtime RAM" },
+  { value: "2MB", label: "包体大小", labelEn: "Package Size" },
+  { value: "60fps", label: "滑动帧率", labelEn: "Scroll FPS" },
+  { value: "99.9%", label: "可用性", labelEn: "Uptime" },
+];
+
+const testimonials = [
+  { name: "小红", role: "亲子游用户", roleEn: "Family Traveler", text: "带孩子去峰林小镇，AI推荐的路线特别贴心，连婴儿车停放点都标注了！VSI安全指数让我很放心。", textEn: "AI route was so thoughtful for family trips, even marked stroller parking spots!" },
+  { name: "阿杰", role: "摄影爱好者", roleEn: "Photography Fan", text: "发现页的RAI评分帮我找到了好多小众村落，连南瑶寨的日出太震撼了，社区里分享了攻略获得200+点赞。", textEn: "RAI scores helped me find hidden gems. The sunrise at Liannan Yao village was stunning!" },
+  { name: "Linda", role: "外国游客", roleEn: "Foreign Tourist", text: "The AI assistant speaks English and helped me plan a 3-day cultural trip. The offline map feature saved me when I had no signal in the mountains.", textEn: "AI assistant helped me plan a 3-day cultural trip. Offline maps saved me in the mountains." },
+];
+
 export default function MiniProgramPage() {
   const { locale } = useI18n();
   const [activeScreen, setActiveScreen] = useState("home");
@@ -212,7 +245,7 @@ export default function MiniProgramPage() {
                   </div>
 
                   {/* Screen content */}
-                  <div className="min-h-[480px] bg-gray-50 dark:bg-gray-900">
+                  <div className="h-[480px] overflow-y-auto bg-gray-50 dark:bg-gray-900">
                     {activeScreen === "home" && (
                       <div className="p-4 space-y-3">
                         <div className="flex items-center justify-between">
@@ -301,7 +334,7 @@ export default function MiniProgramPage() {
                     )}
 
                     {activeScreen === "ai" && (
-                      <div className="p-4 space-y-2 flex flex-col min-h-[400px]">
+                      <div className="p-4 space-y-2 flex flex-col h-full">
                         <div className="flex-1 space-y-2">
                           {((currentScreen.content as any).messages as { role: string; text: string }[]).map((msg, i) => (
                             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
@@ -465,27 +498,39 @@ export default function MiniProgramPage() {
             </motion.div>
           </div>
 
-          {/* ── Section 2: 核心功能 ── */}
+          {/* ── Section 2: 用户旅程 ── */}
+          <motion.div initial={{ y: 30, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }}>
+            <div className="text-center mb-10">
+              <h2 className="text-2xl font-bold mb-2">{locale === "zh" ? "5步开启清远之旅" : "5 Steps to Start"}</h2>
+              <p className="text-sm text-muted-foreground">{locale === "zh" ? "从扫码到分享，全链路智能体验" : "From scanning to sharing, fully intelligent"}</p>
+            </div>
+            <div className="relative">
+              <div className="hidden md:block absolute top-10 left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-emerald-200 via-emerald-400 to-emerald-200 dark:from-emerald-800 dark:via-emerald-600 dark:to-emerald-800" />
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
+                {userJourneySteps.map((step, i) => (
+                  <motion.div key={step.title} initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="flex flex-col items-center text-center relative z-10">
+                    <div className="h-14 w-14 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mb-3 shadow-sm">
+                      <step.icon className="h-6 w-6 text-emerald-600" />
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-600 mb-1">STEP {i + 1}</span>
+                    <h3 className="text-sm font-bold mb-1">{locale === "zh" ? step.title : step.titleEn}</h3>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">{locale === "zh" ? step.desc : step.descEn}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* ── Section 3: 核心功能 ── */}
           <div>
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-2">
-                {locale === "zh" ? "核心功能" : "Core Features"}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {locale === "zh" ? "八大模块，覆盖旅行全链路" : "Eight modules covering the entire travel journey"}
-              </p>
+              <h2 className="text-2xl font-bold mb-2">{locale === "zh" ? "八大核心功能" : "8 Core Features"}</h2>
+              <p className="text-sm text-muted-foreground">{locale === "zh" ? "覆盖旅行全链路，打造一站式智慧出行" : "End-to-end travel modules for a one-stop smart journey"}</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {miniProgramFeatures.map((feature, i) => (
-                <motion.div
-                  key={feature.title}
-                  initial={{ y: 20, opacity: 0 }}
-                  whileInView={{ y: 0, opacity: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="rounded-2xl border border-border bg-card/60 p-5 hover:shadow-md transition-shadow"
-                >
-                  <div className={`inline-flex p-2.5 rounded-xl mb-3 ${feature.bg}`}>
+                <motion.div key={feature.title} initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="group rounded-2xl border border-border bg-card/60 p-5 hover:shadow-lg hover:border-emerald-200 dark:hover:border-emerald-800 transition-all">
+                  <div className={`inline-flex p-2.5 rounded-xl mb-3 ${feature.bg} group-hover:scale-110 transition-transform`}>
                     <feature.icon className={`h-5 w-5 ${feature.color}`} />
                   </div>
                   <h3 className="text-sm font-bold mb-1">{locale === "zh" ? feature.title : feature.titleEn}</h3>
@@ -495,14 +540,46 @@ export default function MiniProgramPage() {
             </div>
           </div>
 
-          {/* ── Section 3: 技术架构 ── */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            className="rounded-2xl border border-border bg-card/60 p-6 md:p-8"
-          >
-            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+          {/* ── Section 4: 为什么选择小程序 ── */}
+          <motion.div initial={{ y: 30, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }}>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-2">{locale === "zh" ? "为什么选择小程序" : "Why Mini Program?"}</h2>
+              <p className="text-sm text-muted-foreground">{locale === "zh" ? "对比传统APP，小程序的六大优势" : "Six advantages over traditional apps"}</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {advantages.map((adv, i) => (
+                <motion.div key={adv.title} initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="flex gap-4 p-5 rounded-2xl border border-border bg-card/60 hover:shadow-md transition-shadow">
+                  <div className="h-10 w-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
+                    <adv.icon className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold mb-1">{locale === "zh" ? adv.title : adv.titleEn}</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{locale === "zh" ? adv.desc : adv.descEn}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ── Section 5: 性能指标 ── */}
+          <motion.div initial={{ y: 30, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }}>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-2">{locale === "zh" ? "性能指标" : "Performance Metrics"}</h2>
+              <p className="text-sm text-muted-foreground">{locale === "zh" ? "极致优化，流畅体验" : "Optimized for the smoothest experience"}</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              {performanceMetrics.map((m, i) => (
+                <motion.div key={m.label} initial={{ scale: 0.8, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="text-center p-5 rounded-2xl border border-border bg-card/60">
+                  <div className="text-2xl font-bold text-emerald-600 mb-1">{m.value}</div>
+                  <div className="text-xs text-muted-foreground">{locale === "zh" ? m.label : m.labelEn}</div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* ── Section 6: 技术架构 ── */}
+          <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} className="rounded-2xl border border-border bg-card/60 p-6 md:p-8">
+            <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
               <Globe className="h-5 w-5 text-emerald-600" />
               {locale === "zh" ? "技术架构" : "Tech Architecture"}
             </h2>
@@ -514,16 +591,28 @@ export default function MiniProgramPage() {
                 </div>
               ))}
             </div>
-
             <div className="mt-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
               <h3 className="text-sm font-bold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-1.5">
                 <Shield className="h-4 w-4" />
-                {locale === "zh" ? "内容安全" : "Content Safety"}
+                {locale === "zh" ? "五层AI内容安全" : "5-Layer AI Content Safety"}
               </h3>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {[
+                  { zh: "关键词过滤", en: "Keyword Filter" },
+                  { zh: "正则匹配", en: "Pattern Match" },
+                  { zh: "民族文化敏感检测", en: "Cultural Sensitivity" },
+                  { zh: "垃圾特征分析", en: "Spam Analysis" },
+                  { zh: "DeepSeek 语义分析", en: "DeepSeek Semantic AI" },
+                ].map((layer, i) => (
+                  <span key={i} className="inline-flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+                    <Check className="h-3 w-3" /> {locale === "zh" ? layer.zh : layer.en}
+                  </span>
+                ))}
+              </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 {locale === "zh"
-                  ? "小程序集成五层AI内容审核过滤系统：关键词过滤 → 正则模式匹配 → 民族文化敏感检测 → 垃圾特征分析 → DeepSeek AI 语义深度分析。所有用户生成内容（UGC）在发布前均经过实时AI审核，确保社区内容安全合规，尊重瑶族、壮族等少数民族文化。"
-                  : "Mini program integrates a 5-layer AI content moderation system: keyword filtering → pattern matching → ethnic sensitivity detection → spam analysis → DeepSeek AI semantic analysis. All UGC is reviewed by AI in real-time before publishing."}
+                  ? "所有UGC在发布前经实时AI审核，确保社区安全合规，尊重瑶族、壮族等少数民族文化。"
+                  : "All UGC reviewed by AI in real-time before publishing, respecting ethnic minority cultures."}
               </p>
               <Button variant="outline" size="sm" className="mt-3 text-xs" asChild>
                 <Link href="/enterprise/moderation">
@@ -531,6 +620,35 @@ export default function MiniProgramPage() {
                   <ChevronRight className="h-3 w-3 ml-1" />
                 </Link>
               </Button>
+            </div>
+          </motion.div>
+
+          {/* ── Section 7: 用户评价 ── */}
+          <motion.div initial={{ y: 30, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }}>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-2">{locale === "zh" ? "用户怎么说" : "What Users Say"}</h2>
+              <p className="text-sm text-muted-foreground">{locale === "zh" ? "来自真实旅行者的声音" : "Voices from real travelers"}</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {testimonials.map((t, i) => (
+                <motion.div key={t.name} initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="p-5 rounded-2xl border border-border bg-card/60">
+                  <div className="flex items-center gap-1 mb-3">
+                    {[...Array(5)].map((_, j) => (
+                      <Star key={j} className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
+                    ))}
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed mb-4">&ldquo;{locale === "zh" ? t.text : t.textEn}&rdquo;</p>
+                  <div className="flex items-center gap-3 pt-3 border-t border-border">
+                    <div className="h-9 w-9 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                      <User className="h-4 w-4 text-emerald-600" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold">{t.name}</div>
+                      <div className="text-[10px] text-muted-foreground">{locale === "zh" ? t.role : t.roleEn}</div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
 
