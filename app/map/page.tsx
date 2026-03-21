@@ -128,7 +128,7 @@ export default function MapPage() {
           ${v.latitude.toFixed(4)}°N, ${v.longitude.toFixed(4)}°E · 🏔 ${v.elevation ?? "--"}m
         </div>
         <div style="display:flex;gap:6px">
-          <a href="/villages/${v.id}" style="flex:1;text-align:center;padding:6px 0;background:#059669;color:#fff;border-radius:8px;font-size:12px;text-decoration:none;font-weight:600">查看详情</a>
+          <a href="/villages?selected=${v.id}" style="flex:1;text-align:center;padding:6px 0;background:#059669;color:#fff;border-radius:8px;font-size:12px;text-decoration:none;font-weight:600">查看详情</a>
           <a href="/planner?village=${v.id}" style="flex:1;text-align:center;padding:6px 0;background:#f0fdf4;color:#059669;border:1px solid #059669;border-radius:8px;font-size:12px;text-decoration:none;font-weight:600">规划路线</a>
         </div>
       </div>`,

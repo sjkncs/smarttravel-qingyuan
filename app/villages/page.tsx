@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MapPin, Star, Shield, Users, Calendar, Search, ChevronRight, Loader2, Lightbulb, Sparkles, Brain } from "lucide-react";
 import MarkdownRenderer from "@/components/markdown-renderer";
@@ -9,6 +9,7 @@ import PageHeader from "@/components/page-header";
 import Footer from "@/components/footer";
 import { useI18n } from "@/lib/i18n";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 interface VillageData {
   id: string;
@@ -46,7 +47,10 @@ export default function VillagesPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
-  const [selectedVillage, setSelectedVillage] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const preSelected = searchParams.get("selected");
+  const [selectedVillage, setSelectedVillage] = useState<string | null>(preSelected);
+  const scrolledRef = useRef(false);
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
@@ -87,6 +91,17 @@ export default function VillagesPage() {
   });
 
   const selected = selectedVillage ? villages.find((v) => v.id === selectedVillage) : null;
+
+  // 从地图页跳转过来时自动滚动到选中的村落卡片
+  useEffect(() => {
+    if (preSelected && !loading && !scrolledRef.current) {
+      scrolledRef.current = true;
+      setTimeout(() => {
+        const el = document.getElementById(`village-${preSelected}`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 300);
+    }
+  }, [preSelected, loading]);
 
   return (
     <main className="flex flex-col min-h-dvh">
@@ -135,6 +150,7 @@ export default function VillagesPage() {
               {filtered.map((village, index) => (
                 <motion.div
                   key={village.id}
+                  id={`village-${village.id}`}
                   layout
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
