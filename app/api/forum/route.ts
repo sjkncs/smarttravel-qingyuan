@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, checkUserBan } from "@/lib/auth";
 import { moderateContentWithAI } from "@/lib/content-moderation";
 
 const typeMap: Record<string, string> = {
@@ -82,6 +82,22 @@ export async function POST(req: NextRequest) {
 
     if (!title || !content) {
       return NextResponse.json({ error: "title and content are required" }, { status: 400 });
+    }
+
+    // 封禁检查：发帖前检查用户是否被禁言（对标淘宝/京东）
+    const banAuthHeader = req.headers.get("authorization");
+    const tokenForBan = banAuthHeader?.replace("Bearer ", "");
+    if (tokenForBan) {
+      const userForBan = await getCurrentUser(tokenForBan);
+      if (userForBan) {
+        const banCheck = await checkUserBan(userForBan.id, "POST");
+        if (banCheck.banned) {
+          return NextResponse.json({
+            error: "post_banned",
+            message: banCheck.message,
+          }, { status: 403 });
+        }
+      }
     }
 
     // AI 内容审核过滤（五层：关键词+正则+民族文化+垃圾特征+DeepSeek语义）

@@ -162,6 +162,44 @@ function needsHumanAgent(query: string): boolean {
   return /转人工|人工客服|要投诉|真人|要人工|不要机器人|投诉|退款申请/.test(query);
 }
 
+// Detect ban/account related queries that AI can try to handle first
+function isBanAccountQuery(query: string): boolean {
+  return /封禁|被封|禁言|限制|解封|申诉|账号异常|无法登录|账号被|冻结|封号|违规/.test(query);
+}
+
+// Detect queries that should auto-escalate (complex issues AI can't resolve)
+function shouldAutoEscalate(query: string): boolean {
+  return /退款.*\d+|盗号|身份证|银行卡.*问题|资金.*安全|被骗|诈骗|法律|律师/.test(query);
+}
+
+// Build ban-specific AI context for account issues
+async function getBanContext(ticketId: string | null): Promise<string> {
+  if (!ticketId) return "";
+  try {
+    const ticket = await prisma?.supportTicket.findUnique({
+      where: { id: ticketId },
+      select: { userId: true },
+    });
+    if (!ticket?.userId) return "";
+    // Check if user has active bans
+    const bans = await (prisma as any).userBan?.findMany({
+      where: {
+        userId: ticket.userId,
+        status: { in: ["ACTIVE", "APPEALED"] },
+        OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    if (!bans || bans.length === 0) return "\n\n该用户当前没有任何封禁记录。";
+    const banInfo = bans.map((b: any) =>
+      `- 类型: ${b.type === "ACCOUNT" ? "账号封禁" : b.type === "POST" ? "发帖封禁" : b.type === "CHAT" ? "聊天封禁" : "警告"}, 原因: ${b.reason}, 状态: ${b.status === "ACTIVE" ? "生效中" : "申诉中"}, 到期: ${b.expiresAt ? new Date(b.expiresAt).toLocaleString("zh-CN") : "永久"}`
+    ).join("\n");
+    return `\n\n═══ 用户封禁记录 ═══\n${banInfo}\n\n处理规则：\n- 如果是临时封禁，告知用户到期时间\n- 如果用户想申诉，引导用户说"我要申诉"\n- 严重违规（永久封禁）建议转人工客服处理\n- 不要随意承诺解封`;
+  } catch {
+    return "";
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { messages, ticketId, sessionId } = await req.json();
@@ -170,6 +208,61 @@ export async function POST(req: NextRequest) {
     }
 
     const userQuery = messages[messages.length - 1]?.content || "";
+    const messageCount = messages.length;
+
+    // 0. Auto-escalation check: if AI has been chatting 6+ rounds without resolution
+    if (messageCount >= 12 && !needsHumanAgent(userQuery)) {
+      // Check if most recent messages are still questions (not resolved)
+      const recentUserMsgs = messages.filter((m: any) => m.role === "user").slice(-3);
+      const stillAsking = recentUserMsgs.some((m: any) => /\?|？|怎么|为什么|还是|不行|没用|解决/.test(m.content));
+      if (stillAsking) {
+        // Auto-escalate: AI couldn't resolve after multiple attempts
+        if (ticketId) {
+          try {
+            await prisma!.supportTicket.update({
+              where: { id: ticketId },
+              data: { status: "HUMAN_QUEUE", priority: "HIGH" },
+            });
+            await prisma?.supportMessage.create({
+              data: { ticketId, sender: "SYSTEM", content: "[系统] AI多轮对话未解决，自动转接人工客服" },
+            });
+          } catch { /* DB may not be available */ }
+        }
+        const autoEscalateMsg = `看起来我还没有完全解决您的问题，我已自动为您转接人工客服 👤\n\n**转接原因**: AI多轮对话未能解决\n**优先级**: 已提升为高优先级\n**预计等待**: 3-5分钟\n\n人工客服会看到我们的完整对话记录，您无需重复描述问题。`;
+        return new Response(createSSEStream(streamText(autoEscalateMsg)), {
+          headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "X-Support-Intent": "auto_escalation",
+            "X-Ticket-Status": "HUMAN_QUEUE",
+          },
+        });
+      }
+    }
+
+    // 0b. Complex issues auto-escalate immediately
+    if (shouldAutoEscalate(userQuery)) {
+      if (ticketId) {
+        try {
+          await prisma!.supportTicket.update({
+            where: { id: ticketId },
+            data: { status: "HUMAN_QUEUE", priority: "URGENT" },
+          });
+          await prisma?.supportMessage.create({
+            data: { ticketId, sender: "SYSTEM", content: `[系统] 检测到敏感/复杂问题，自动转接人工: ${userQuery.slice(0, 50)}` },
+          });
+        } catch { /* DB may not be available */ }
+      }
+      const urgentMsg = `您反馈的问题涉及重要事项，我已为您**紧急转接**人工客服 🚨\n\n**优先级**: 紧急\n**预计接入**: 1-3分钟\n\n请放心，人工客服会优先处理您的问题。`;
+      return new Response(createSSEStream(streamText(urgentMsg)), {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "X-Support-Intent": "urgent_escalation",
+          "X-Ticket-Status": "HUMAN_QUEUE",
+        },
+      });
+    }
 
     // 1. Quick reply check (< 1ms)
     const quick = getQuickReply(userQuery);
@@ -227,8 +320,14 @@ export async function POST(req: NextRequest) {
       } catch { /* DB may not be available */ }
     }
 
-    const systemPrompt = ragContext
-      ? `${SUPPORT_SYSTEM_PROMPT}\n\n═══ 知识库检索结果 ═══\n请优先基于以下内容回答，保持准确性：\n\n${ragContext}\n\n═══ 回答要求 ═══\n- 基于知识库简洁回答，不要重复问题\n- 如知识库无法覆盖，给出合理建议并可提议转人工`
+    // 4b. If ban/account query, fetch ban context
+    let banContext = "";
+    if (isBanAccountQuery(userQuery)) {
+      banContext = await getBanContext(ticketId);
+    }
+
+    const systemPrompt = ragContext || banContext
+      ? `${SUPPORT_SYSTEM_PROMPT}${banContext}\n\n═══ 知识库检索结果 ═══\n请优先基于以下内容回答，保持准确性：\n\n${ragContext}\n\n═══ 回答要求 ═══\n- 基于知识库简洁回答，不要重复问题\n- 如知识库无法覆盖，给出合理建议并可提议转人工\n- 对于封禁/账号问题，先查看用户封禁记录再回答\n- AI能处理的：查询封禁状态、解释封禁原因、引导申诉流程\n- AI不能处理的：解封操作、退款审批、身份核实 → 转人工`
       : SUPPORT_SYSTEM_PROMPT;
 
     const apiKey = process.env.OPENAI_API_KEY;

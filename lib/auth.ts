@@ -127,6 +127,12 @@ export async function loginWithPassword(account: string, password: string): Prom
     return { success: false, message: "账号或密码错误" };
   }
 
+  // 检查账号封禁（对标淘宝/京东安全体系）
+  const banCheck = await checkUserBan(user.id, "ACCOUNT");
+  if (banCheck.banned) {
+    return { success: false, message: banCheck.message };
+  }
+
   const token = signToken({ userId: user.id, role: user.role });
 
   await prisma?.session.create({
@@ -281,6 +287,49 @@ export async function verifyCode(target: string, code: string): Promise<boolean>
     return true;
   }
   return false;
+}
+
+// ═══════════════════════════════════
+// USER BAN CHECK (封禁检查)
+// 对标淘宝/京东: 登录时/发帖时/操作前检查
+// ═══════════════════════════════════
+
+export async function checkUserBan(
+  userId: string,
+  banType?: string
+): Promise<{ banned: boolean; message: string; ban?: any }> {
+  try {
+    const where: Record<string, unknown> = {
+      userId,
+      status: "ACTIVE",
+      OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }],
+    };
+    if (banType) where.type = banType;
+
+    const activeBan = await (prisma as any)?.userBan?.findFirst({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
+
+    if (!activeBan) return { banned: false, message: "" };
+
+    const typeLabel: Record<string, string> = {
+      ACCOUNT: "账号已被封禁",
+      POST: "发帖权限已被限制",
+      CHAT: "聊天功能已被限制",
+      WARNING: "账号存在警告",
+    };
+    const label = typeLabel[activeBan.type] || "账号受限";
+    const expiry = activeBan.expiresAt
+      ? `，解封时间: ${new Date(activeBan.expiresAt).toLocaleString("zh-CN")}`
+      : "（永久封禁）";
+    const message = `${label}${expiry}。原因: ${activeBan.reason}。如有异议请联系客服申诉。`;
+
+    return { banned: true, message, ban: activeBan };
+  } catch {
+    // DB unavailable, allow access
+    return { banned: false, message: "" };
+  }
 }
 
 // ═══════════════════════════════════

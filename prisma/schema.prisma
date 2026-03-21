@@ -40,6 +40,7 @@ model User {
   commentLikes  CommentLike[]
   supportTickets SupportTicket[]
   supportAgent   SupportAgent?
+  bans           UserBan[]
 
   @@index([phone])
   @@index([email])
@@ -419,6 +420,51 @@ model SupportAgent {
 
   @@index([isOnline])
   @@index([department])
+}
+
+// ═══════════════════════════════════
+// USER BAN & CONTENT MANAGEMENT (封禁/言论管理)
+// 对标淘宝/京东: 账号封禁 + 言论封禁 + 封禁历史 + 申诉
+// ═══════════════════════════════════
+
+enum BanType {
+  ACCOUNT     // 账号封禁（禁止登录）
+  POST        // 发帖封禁（禁止发帖/评论）
+  CHAT        // 聊天封禁（禁止使用客服聊天）
+  WARNING     // 警告（不限制功能）
+}
+
+enum BanStatus {
+  ACTIVE      // 生效中
+  EXPIRED     // 已到期
+  REVOKED     // 已撤销
+  APPEALED    // 申诉中
+}
+
+model UserBan {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        BanType
+  status      BanStatus @default(ACTIVE)
+  reason      String    // 封禁原因
+  evidence    String?   // 证据（内容截取/截图URL）
+  duration    Int?      // 封禁时长（小时），null=永久
+  bannedBy    String    // 操作人ID（admin/system）
+  bannedByName String   // 操作人名称
+  expiresAt   DateTime? // 到期时间
+  revokedAt   DateTime?
+  revokedBy   String?
+  revokeReason String?
+  appealText  String?   // 用户申诉内容
+  appealAt    DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([type])
+  @@index([expiresAt])
 }
 
 model SupportFAQ {
