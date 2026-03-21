@@ -200,9 +200,10 @@ export default function GovernmentPage() {
                   </Link>
                 </Button>
                 <Button variant="outline" className="h-12 px-7 rounded-xl text-base" asChild>
-                  <Link href="/pricing">{locale === "zh" ? "申请政府专项方案" : "Request Gov Solution"}</Link>
+                  <a href="#gov-free-plan">{locale === "zh" ? "免费申请政府方案" : "Apply for Free Gov Plan"}</a>
                 </Button>
               </div>
+              <p className="text-sm text-violet-600 dark:text-violet-300 font-semibold mt-4">{locale === "zh" ? "✨ 政府版全部功能免费开放" : "✨ Government Edition — All features free"}</p>
             </motion.div>
           </div>
 
@@ -443,6 +444,64 @@ export default function GovernmentPage() {
         </div>
       </section>
 
+      {/* ═══ FREE GOV PLAN ═══ */}
+      <section id="gov-free-plan" className="py-20 px-4 scroll-mt-8">
+        <div className="max-w-4xl mx-auto">
+          <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold text-violet-600 mb-3">
+              <Award className="h-3.5 w-3.5" />{locale === "zh" ? "政府专项方案" : "GOVERNMENT SOLUTION"}
+            </div>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-4">{locale === "zh" ? "政府版 · 全部免费" : "Government Edition · Completely Free"}</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">{locale === "zh" ? "助力乡村振兴与智慧文旅治理，政府单位可免费使用全部平台功能" : "Supporting rural revitalization and smart tourism governance — all features free for government agencies"}</p>
+          </motion.div>
+          <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }}>
+            <div className="rounded-2xl border-2 border-violet-500 bg-linear-to-b from-violet-50/80 to-card dark:from-violet-900/20 dark:to-card shadow-xl ring-2 ring-violet-500/20 p-8 md:p-10">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2.5 rounded-xl bg-violet-100 dark:bg-violet-900/30">
+                      <Landmark className="h-6 w-6 text-violet-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-extrabold">{locale === "zh" ? "政府专项版" : "Government Edition"}</h3>
+                      <span className="text-[10px] font-bold text-white bg-violet-600 px-2 py-0.5 rounded-full">{locale === "zh" ? "限政府单位" : "Gov Only"}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-baseline gap-1 mb-4">
+                    <span className="text-4xl font-extrabold text-violet-600">{locale === "zh" ? "免费" : "Free"}</span>
+                    <span className="text-sm text-muted-foreground">{locale === "zh" ? "· 永久免费" : "· Forever free"}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {[
+                      { zh: "六大治理平台模块全开放", en: "All 6 governance modules" },
+                      { zh: "VSI·CPI·RAI·CBT四大指数", en: "All 4 index systems" },
+                      { zh: "大数据驾驶舱无限使用", en: "Unlimited data cockpit" },
+                      { zh: "文化遗产保护监测", en: "Heritage monitoring" },
+                      { zh: "应急指挥与安全预警", en: "Emergency command & alerts" },
+                      { zh: "政策效果评估报告", en: "Policy impact reports" },
+                      { zh: "等保三级 · 政务云部署", en: "MLPS L3 · Gov cloud deploy" },
+                      { zh: "7×24专属运维团队", en: "24/7 dedicated ops team" },
+                    ].map((f, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm">
+                        <CheckCircle2 className="h-4 w-4 text-violet-500 shrink-0" />
+                        <span>{locale === "zh" ? f.zh : f.en}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="shrink-0 text-center">
+                  <Button className="bg-violet-600 hover:bg-violet-700 text-white h-12 px-8 rounded-xl text-base font-bold shadow-lg shadow-violet-600/20">
+                    <Headphones className="h-4 w-4 mr-2" />
+                    {locale === "zh" ? "联系政务专员" : "Contact Gov Specialist"}
+                  </Button>
+                  <p className="text-[11px] text-muted-foreground mt-3">{locale === "zh" ? "需提供政府单位资质证明" : "Government credentials required"}</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ═══ CTA ═══ */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
@@ -455,7 +514,7 @@ export default function GovernmentPage() {
                 <p className="text-violet-100 mb-8 max-w-xl mx-auto">{locale === "zh" ? "预约政府专项方案演示，我们的文旅治理专家将为您定制从调研到上线的全流程方案" : "Book a government solution demo. Our experts will customize a full-process plan from assessment to launch"}</p>
                 <div className="flex items-center justify-center gap-3 flex-wrap">
                   <Button className="bg-white text-violet-700 hover:bg-violet-50 h-12 px-8 rounded-xl text-base font-bold shadow-lg" asChild>
-                    <Link href="/pricing">{locale === "zh" ? "申请政府专项方案" : "Request Gov Solution"}</Link>
+                    <a href="#gov-free-plan">{locale === "zh" ? "免费申请政府方案" : "Apply for Free Gov Plan"}</a>
                   </Button>
                   <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 h-12 px-8 rounded-xl text-base" asChild>
                     <Link href="/government/cockpit">{locale === "zh" ? "体验驾驶舱Demo" : "Try Cockpit Demo"}</Link>

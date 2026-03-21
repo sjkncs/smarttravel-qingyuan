@@ -196,7 +196,7 @@ export default function EnterprisePage() {
                   </Link>
                 </Button>
                 <Button variant="outline" className="h-12 px-7 rounded-xl text-base" asChild>
-                  <Link href="/pricing">{locale === "zh" ? "预约1v1演示" : "Book 1:1 Demo"}</Link>
+                  <a href="#enterprise-pricing">{locale === "zh" ? "查看企业方案" : "View Enterprise Plans"}</a>
                 </Button>
               </div>
             </motion.div>
@@ -434,7 +434,7 @@ export default function EnterprisePage() {
       </section>
 
       {/* ═══ PRICING ═══ */}
-      <section className="py-20 px-4 bg-muted/30">
+      <section id="enterprise-pricing" className="py-20 px-4 bg-muted/30 scroll-mt-8">
         <div className="max-w-5xl mx-auto">
           <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-extrabold mb-4">{locale === "zh" ? "灵活的企业订阅方案" : "Flexible Enterprise Plans"}</h2>
@@ -481,7 +481,7 @@ export default function EnterprisePage() {
                 <p className="text-sky-100 mb-8 max-w-xl mx-auto">{locale === "zh" ? "预约30分钟免费咨询，我们的行业专家将为您量身定制解决方案" : "Book a free 30-min consultation. Our industry experts will tailor a solution for you"}</p>
                 <div className="flex items-center justify-center gap-3 flex-wrap">
                   <Button className="bg-white text-sky-700 hover:bg-sky-50 h-12 px-8 rounded-xl text-base font-bold shadow-lg" asChild>
-                    <Link href="/pricing">{locale === "zh" ? "预约免费咨询" : "Book Free Consultation"}</Link>
+                    <a href="#enterprise-pricing">{locale === "zh" ? "查看企业方案" : "View Enterprise Plans"}</a>
                   </Button>
                   <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 h-12 px-8 rounded-xl text-base" asChild>
                     <Link href="/enterprise/dashboard">{locale === "zh" ? "体验Demo" : "Try Demo"}</Link>
