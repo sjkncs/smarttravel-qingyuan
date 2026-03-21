@@ -382,7 +382,7 @@ export default function EnterprisePage() {
           </motion.div>
           <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }}>
             <div className="rounded-2xl border border-border bg-card overflow-hidden">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm" suppressHydrationWarning>
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
                     <th className="text-left p-3 font-semibold">{locale === "zh" ? "功能" : "Feature"}</th>
