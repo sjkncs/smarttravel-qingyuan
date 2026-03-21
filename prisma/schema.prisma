@@ -1,0 +1,440 @@
+// SmartTravel Qingyuan — Production Database Schema
+// Covers: Auth, Villages, Forum, Orders, Trips, Testimonials, Stats
+
+generator client {
+  provider   = "prisma-client-js"
+  output     = "../lib/generated/prisma"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ═══════════════════════════════════
+// AUTH & USERS
+// ═══════════════════════════════════
+
+model User {
+  id            String    @id @default(cuid())
+  phone         String?   @unique
+  email         String?   @unique
+  password      String?   // bcrypt hashed; null for SMS-only users
+  name          String
+  avatar        String?
+  role          UserRole  @default(USER)
+  wechatOpenId  String?   @unique
+  qqOpenId      String?   @unique
+  locale        String    @default("zh")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions      Session[]
+  posts         ForumPost[]
+  comments      ForumComment[]
+  favorites     Favorite[]
+  orders        Order[]
+  tripPlans     TripPlan[]
+  testimonials  Testimonial[]
+  postVotes     PostVote[]
+  commentLikes  CommentLike[]
+  supportTickets SupportTicket[]
+  supportAgent   SupportAgent?
+
+  @@index([phone])
+  @@index([email])
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  ENTERPRISE
+  GOVERNMENT
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  ip        String?
+  ua        String?
+  createdAt DateTime @default(now())
+
+  @@index([token])
+  @@index([userId])
+}
+
+model VerificationCode {
+  id        String   @id @default(cuid())
+  target    String   // phone or email
+  code      String
+  type      CodeType
+  used      Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([target, code])
+}
+
+enum CodeType {
+  SMS
+  EMAIL
+}
+
+// ═══════════════════════════════════
+// VILLAGES & TOURISM
+// ═══════════════════════════════════
+
+model Village {
+  id          String   @id @default(cuid())
+  slug        String   @unique // URL-friendly: "fenglin", "yaozhai"
+  name        String
+  nameEn      String
+  location    String
+  image       String?
+  rating      Float    @default(0)
+  tags        String[] // PostgreSQL array
+  tagsEn      String[]
+  description String
+  descEn      String
+  raiScore    Float    @default(0) // Rural Accessibility Index
+  cpiScore    Float    @default(0) // Cultural Preservation Index
+  vsiScore    Float    @default(0) // Village Safety Index
+  season      String
+  seasonEn    String
+  category    String   // "nature", "culture", "heritage", "wellness"
+  visitors    Int      @default(0)
+  reviewCount Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  detail      VillageDetail?
+  favorites   Favorite[]
+  tripStops   TripStop[]
+
+  @@index([slug])
+  @@index([category])
+  @@index([rating])
+}
+
+model VillageDetail {
+  id         String   @id @default(cuid())
+  villageId  String   @unique
+  village    Village  @relation(fields: [villageId], references: [id], onDelete: Cascade)
+  activities String[]
+  bestTime   String
+  transport  String
+  tips       String
+}
+
+// ═══════════════════════════════════
+// FORUM
+// ═══════════════════════════════════
+
+model ForumPost {
+  id           String    @id @default(cuid())
+  type         PostType
+  title        String
+  content      String
+  authorId     String
+  author       User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorName   String    // denormalized for display
+  authorRole   String    @default("")
+  authorAvatar String    @default("😊")
+  votes        Int       @default(0)
+  views        Int       @default(0)
+  tags         String[]
+  images       String[]  // uploaded image URLs
+  aiSummary    String?
+  aiImageUrl   String?   // AI-generated illustration
+  pinned       Boolean   @default(false)
+  published    Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  comments     ForumComment[]
+  postVotes    PostVote[]
+
+  @@index([authorId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+enum PostType {
+  QUESTION
+  DISCUSSION
+  GUIDE
+  REVIEW
+}
+
+model ForumComment {
+  id        String   @id @default(cuid())
+  postId    String
+  post      ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorName String
+  authorAvatar String @default("😊")
+  content   String
+  images    String[]  // comment image URLs
+  likes     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  commentLikes CommentLike[]
+
+  @@index([postId])
+  @@index([authorId])
+}
+
+model PostVote {
+  id     String @id @default(cuid())
+  postId String
+  post   ForumPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  value  Int    // +1 or -1
+
+  @@unique([postId, userId])
+}
+
+model CommentLike {
+  id        String @id @default(cuid())
+  commentId String
+  comment   ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+}
+
+// ═══════════════════════════════════
+// ORDERS & PAYMENTS
+// ═══════════════════════════════════
+
+model Order {
+  id          String      @id @default(cuid())
+  orderNo     String      @unique // ST202603141234ABCD
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  planId      String      // "explorer" | "pro" | "premium"
+  amount      Float
+  currency    String      @default("CNY")
+  billing     String      // "monthly" | "yearly"
+  method      PayMethod
+  status      OrderStatus @default(PENDING)
+  payUrl      String?
+  paidAt      DateTime?
+  expiresAt   DateTime?   // subscription expiry
+  tradeNo     String?     // third-party transaction ID
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([userId])
+  @@index([orderNo])
+  @@index([status])
+}
+
+enum PayMethod {
+  ALIPAY
+  WECHAT
+  UNIONPAY
+  VISA
+  MASTERCARD
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  EXPIRED
+}
+
+// ═══════════════════════════════════
+// TRIP PLANS
+// ═══════════════════════════════════
+
+model TripPlan {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  prompt    String     // original user request
+  content   String     // AI-generated markdown plan
+  days      Int        @default(1)
+  budget    Float?
+  travelers Int        @default(1)
+  createdAt DateTime   @default(now())
+
+  stops     TripStop[]
+
+  @@index([userId])
+}
+
+model TripStop {
+  id         String   @id @default(cuid())
+  tripPlanId String
+  tripPlan   TripPlan @relation(fields: [tripPlanId], references: [id], onDelete: Cascade)
+  villageId  String?
+  village    Village?  @relation(fields: [villageId], references: [id])
+  day        Int
+  time       String?
+  activity   String
+  note       String?
+  sortOrder  Int      @default(0)
+
+  @@index([tripPlanId])
+}
+
+// ═══════════════════════════════════
+// FAVORITES
+// ═══════════════════════════════════
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  villageId String
+  village   Village  @relation(fields: [villageId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, villageId])
+  @@index([userId])
+}
+
+// ═══════════════════════════════════
+// TESTIMONIALS
+// ═══════════════════════════════════
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  name      String
+  role      String
+  content   String
+  contentEn String   @default("")
+  rating    Int      @default(5)
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([approved])
+}
+
+// ═══════════════════════════════════
+// PLATFORM STATS (key-value)
+// ═══════════════════════════════════
+
+model PlatformStat {
+  id      String @id @default(cuid())
+  key     String @unique // "visitors", "satisfaction", etc.
+  value   Float
+  suffix  String @default("")
+  label   String
+  labelEn String @default("")
+}
+
+// ═══════════════════════════════════
+// CUSTOMER SERVICE (智能客服 + 人工客服)
+// ═══════════════════════════════════
+
+enum TicketStatus {
+  PENDING      // 等待中
+  AI_HANDLING  // AI处理中
+  HUMAN_QUEUE  // 等待人工
+  HUMAN_ACTIVE // 人工处理中
+  RESOLVED     // 已解决
+  CLOSED       // 已关闭
+}
+
+enum TicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum MessageSender {
+  USER
+  AI
+  AGENT
+  SYSTEM
+}
+
+model SupportTicket {
+  id          String         @id @default(cuid())
+  ticketNo    String         @unique // T20260318-0001
+  userId      String?
+  user        User?          @relation(fields: [userId], references: [id])
+  agentId     String?
+  agent       SupportAgent?  @relation(fields: [agentId], references: [id])
+  subject     String         // 问题摘要
+  category    String         // account/payment/trip/village/map/forum/technical/other
+  status      TicketStatus   @default(AI_HANDLING)
+  priority    TicketPriority @default(NORMAL)
+  satisfaction Int?          // 1-5 用户满意度评分
+  resolvedBy  String?        // "ai" | "agent:{id}"
+  metadata    String?        // JSON: 设备信息/页面来源等
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  closedAt    DateTime?
+
+  messages    SupportMessage[]
+
+  @@index([userId])
+  @@index([agentId])
+  @@index([status])
+  @@index([ticketNo])
+  @@index([category])
+}
+
+model SupportMessage {
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  sender    MessageSender
+  content   String
+  metadata  String?       // JSON: RAG来源/意图/置信度
+  createdAt DateTime      @default(now())
+
+  @@index([ticketId])
+}
+
+model SupportAgent {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
+  displayName String
+  avatar      String?
+  department  String   @default("general") // general/technical/payment/vip
+  maxTickets  Int      @default(5)
+  isOnline    Boolean  @default(false)
+  lastActive  DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  tickets     SupportTicket[]
+
+  @@index([isOnline])
+  @@index([department])
+}
+
+model SupportFAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  category  String   // account/payment/trip/village/map/forum/technical
+  tags      String[] // PostgreSQL array
+  hitCount  Int      @default(0)
+  helpful   Int      @default(0)
+  unhelpful Int      @default(0)
+  published Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([published])
+}

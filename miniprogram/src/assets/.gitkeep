@@ -1,0 +1,7 @@
+Tab bar icons placeholder — replace with actual PNG icons (81x81px recommended).
+Required files:
+  tab-home.png / tab-home-active.png
+  tab-explore.png / tab-explore-active.png
+  tab-ai.png / tab-ai-active.png
+  tab-forum.png / tab-forum-active.png
+  tab-profile.png / tab-profile-active.png

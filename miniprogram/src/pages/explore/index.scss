@@ -1,0 +1,52 @@
+.explore-page { padding: 20px 24px 120px; }
+
+.search-bar {
+  display: flex; align-items: center;
+  background: #fff; border-radius: 20px;
+  padding: 16px 20px; margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.search-icon { margin-right: 12px; font-size: 28px; }
+.search-input { flex: 1; font-size: 26px; }
+
+.categories {
+  white-space: nowrap; margin-bottom: 20px;
+  width: 100%;
+}
+.cat-item {
+  display: inline-block; padding: 10px 24px;
+  border-radius: 30px; font-size: 24px;
+  background: #fff; margin-right: 12px;
+  color: #666; transition: all 0.2s;
+  &.active { background: #059669; color: #fff; }
+}
+
+.village-list { display: flex; flex-direction: column; gap: 20px; }
+.village-card {
+  background: #fff; border-radius: 24px;
+  overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.card-img-wrap { height: 240px; background: #f0fdf4; }
+.card-img { width: 100%; height: 100%; }
+.card-img-placeholder {
+  width: 100%; height: 100%; display: flex;
+  align-items: center; justify-content: center; font-size: 80px;
+}
+.card-body { padding: 20px; }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.card-name { font-size: 30px; font-weight: bold; }
+.card-rating { font-size: 22px; color: #f59e0b; }
+.card-location { font-size: 22px; color: #999; display: block; margin-bottom: 8px; }
+.card-desc { font-size: 22px; color: #666; display: block; margin-bottom: 12px; line-height: 1.5; }
+.card-scores { display: flex; gap: 8px; margin-bottom: 12px; }
+.score-badge {
+  font-size: 18px; padding: 4px 12px; border-radius: 12px; font-weight: bold;
+  &.rai { background: #d1fae5; color: #059669; }
+  &.cpi { background: #dbeafe; color: #2563eb; }
+  &.vsi { background: #fef3c7; color: #d97706; }
+}
+.card-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.loading, .empty {
+  text-align: center; padding: 80px 0; color: #999; font-size: 26px;
+}

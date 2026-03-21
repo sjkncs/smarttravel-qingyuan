@@ -1,0 +1,62 @@
+.shop-page { padding-bottom: 40px; }
+
+.categories {
+  white-space: nowrap; padding: 20px 24px; width: 100%;
+  background: #fff; border-bottom: 1px solid #f0f0f0;
+}
+.cat-item {
+  display: inline-flex; flex-direction: column; align-items: center;
+  padding: 12px 24px; margin-right: 16px; border-radius: 16px;
+  &.active { background: #d1fae5; }
+}
+.cat-icon { font-size: 36px; margin-bottom: 4px; }
+.cat-label { font-size: 22px; color: #333; }
+
+.product-grid {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  padding: 20px 24px;
+}
+.product-card {
+  width: calc(50% - 8px); background: #fff; border-radius: 20px;
+  overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.product-img { position: relative; height: 220px; background: #f0fdf4; }
+.img { width: 100%; height: 100%; }
+.img-placeholder {
+  width: 100%; height: 100%; display: flex;
+  align-items: center; justify-content: center;
+}
+.placeholder-icon { font-size: 60px; }
+.discount-badge {
+  position: absolute; top: 10px; left: 10px;
+  background: #ef4444; padding: 4px 10px; border-radius: 10px;
+}
+.discount-text { font-size: 18px; color: #fff; font-weight: bold; }
+
+.product-info { padding: 16px; }
+.product-name {
+  font-size: 24px; font-weight: bold; display: block;
+  margin-bottom: 4px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
+.product-desc {
+  font-size: 20px; color: #999; display: block;
+  margin-bottom: 8px; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
+.product-tags { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.product-tag {
+  font-size: 18px; padding: 2px 8px; border-radius: 8px;
+  background: #fef3c7; color: #92400e;
+}
+.product-bottom {
+  display: flex; align-items: baseline;
+  justify-content: space-between; margin-bottom: 6px;
+}
+.price-wrap { display: flex; align-items: baseline; gap: 6px; }
+.price { font-size: 28px; color: #ef4444; font-weight: bold; }
+.original-price {
+  font-size: 20px; color: #ccc; text-decoration: line-through;
+}
+.sales { font-size: 18px; color: #999; }
+.product-village { font-size: 18px; color: #059669; display: block; }

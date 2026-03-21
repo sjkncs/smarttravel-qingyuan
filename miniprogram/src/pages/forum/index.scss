@@ -1,0 +1,94 @@
+.forum-page { padding-bottom: 120px; }
+
+.categories {
+  white-space: nowrap; padding: 20px 24px; width: 100%;
+  background: #fff; border-bottom: 1px solid #f0f0f0;
+}
+.cat-item {
+  display: inline-block; padding: 10px 24px; border-radius: 30px;
+  font-size: 24px; background: #f5f5f5; margin-right: 12px; color: #666;
+  &.active { background: #059669; color: #fff; }
+}
+
+.post-list { padding: 20px 24px; }
+.post-card {
+  background: #fff; border-radius: 20px; padding: 24px;
+  margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.post-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.post-type-badge { padding: 4px 12px; border-radius: 10px; }
+.badge-text { font-size: 20px; color: #fff; font-weight: bold; }
+.post-time { font-size: 20px; color: #999; }
+.post-title { font-size: 28px; font-weight: bold; display: block; margin-bottom: 8px; }
+.post-content { font-size: 24px; color: #666; display: block; line-height: 1.6; margin-bottom: 12px; }
+
+.ai-summary {
+  background: #f0fdf4; border-radius: 12px; padding: 16px;
+  margin-bottom: 12px; border: 1px solid #d1fae5;
+}
+.ai-label { font-size: 20px; color: #059669; font-weight: bold; display: block; margin-bottom: 6px; }
+.ai-text { font-size: 22px; color: #333; line-height: 1.5; display: block; }
+
+.post-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 12px; border-top: 1px solid #f5f5f5;
+}
+.post-author { font-size: 22px; color: #666; }
+.post-stats { display: flex; gap: 16px; font-size: 22px; color: #999; }
+.post-tags { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+.fab {
+  position: fixed; right: 30px; bottom: 140px;
+  width: 90px; height: 90px; border-radius: 50%;
+  background: #059669; display: flex; align-items: center;
+  justify-content: center; box-shadow: 0 4px 20px rgba(5,150,105,0.4);
+  z-index: 100;
+}
+.fab-icon { font-size: 36px; }
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  display: flex; align-items: flex-end; z-index: 200;
+}
+.modal {
+  width: 100%; background: #fff; border-radius: 30px 30px 0 0;
+  padding: 30px; max-height: 80vh; overflow-y: auto;
+}
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-title { font-size: 32px; font-weight: bold; }
+.modal-close { font-size: 32px; color: #999; padding: 10px; }
+
+.type-selector { display: flex; gap: 12px; margin-bottom: 20px; }
+.type-option {
+  padding: 10px 20px; border-radius: 16px; font-size: 24px;
+  background: #f5f5f5; color: #666;
+  &.active { background: #d1fae5; color: #059669; font-weight: bold; }
+}
+
+.title-input {
+  width: 100%; padding: 20px; border: 1px solid #e5e5e5;
+  border-radius: 16px; font-size: 28px; margin-bottom: 16px;
+  box-sizing: border-box;
+}
+.content-input {
+  width: 100%; min-height: 200px; padding: 20px;
+  border: 1px solid #e5e5e5; border-radius: 16px;
+  font-size: 26px; line-height: 1.6; margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.modal-footer { display: flex; align-items: center; justify-content: space-between; }
+.char-count { font-size: 22px; color: #999; }
+.post-btn {
+  padding: 14px 40px; border-radius: 20px;
+  background: #e5e5e5; color: #999; font-size: 28px;
+  &.active { background: #059669; color: #fff; }
+}
+
+.moderation-notice {
+  margin-top: 16px; padding: 12px; background: #fefce8;
+  border-radius: 12px; border: 1px solid #fef08a;
+}
+.notice-text { font-size: 20px; color: #92400e; }
+
+.loading, .empty { text-align: center; padding: 80px 0; color: #999; font-size: 26px; }

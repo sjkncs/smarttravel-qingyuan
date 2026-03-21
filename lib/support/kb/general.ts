@@ -1,0 +1,11 @@
+import type { SupportKBEntry } from "../knowledge-base";
+export const GENERAL_KB: SupportKBEntry[] = [
+  { id: "gen-001", category: "general", subcategory: "平台介绍", priority: 8, question: "智游清远是什么平台？", answer: "智游清远（SmartTravel Qingyuan）是专注广东清远乡村旅游的AI数字化平台。\n\n主要功能：\n- **AI行程规划**（/planner）：与AI助手对话生成个性化行程\n- **村落探索**（/villages）：5大核心村落深度信息\n- **实景地图**（/map）：8图层地图含天气、安全指数\n- **社区论坛**（/forum）：游客交流、攻略分享\n- **村落排名**（/rankings）：多维度评分排行\n\n由AI驱动，融合RAI可达性/CPI文化保护/VSI安全三大评估体系。", keywords: ["什么平台", "智游清远", "介绍", "功能", "是什么"] },
+  { id: "gen-002", category: "general", subcategory: "联系客服", priority: 10, question: "如何联系人工客服？", answer: "联系方式：\n1. 点击右下角绿色「智能客服」按钮 → 在聊天窗口输入「转人工」或点击「联系人工客服」选项\n2. 人工客服时间：09:00-22:00（节假日不间断）\n3. 响应时间：工作时间30分钟内", keywords: ["人工客服", "联系客服", "电话", "客服电话", "怎么联系", "转人工"] },
+  { id: "gen-003", category: "general", subcategory: "隐私安全", priority: 7, question: "我的个人信息安全吗？", answer: "平台安全保障：\n1. 全站HTTPS加密传输\n2. 密码加密存储，从不明文保存\n3. 不出售用户数据给第三方\n4. 符合《个人信息保护法》要求\n\n详细信息请查看「隐私政策」页面（页面底部链接）。", keywords: ["隐私", "安全", "个人信息", "数据保护", "信息泄露"] },
+  { id: "gen-004", category: "general", subcategory: "意见反馈", priority: 6, question: "如何提交意见或建议？", answer: "您可以通过以下方式反馈：\n1. 在客服聊天窗口直接描述您的建议\n2. 输入「转人工」联系人工客服详细说明\n3. 在论坛发帖分享您的建议\n\n我们重视每一条反馈，感谢您帮助我们改进！", keywords: ["反馈", "建议", "意见", "投诉", "改进", "功能请求"] },
+  { id: "gen-005", category: "general", subcategory: "关于平台", priority: 5, question: "平台支持哪些语言？", answer: "目前支持简体中文（默认）和英语。页面右上角可切换语言。村落介绍、AI回复等核心内容提供中英双语版本。", keywords: ["语言", "英文", "中文", "多语言", "切换语言"] },
+  { id: "gen-006", category: "safety", subcategory: "举报", priority: 8, question: "如何举报诈骗或虚假信息？", answer: "如发现诈骗或虚假信息：\n1. 在客服窗口输入「转人工」，说明「紧急举报」\n2. 提供相关截图和信息，方便快速处理\n\n平台会尽快核实处理，情节严重将立即采取措施。", keywords: ["诈骗", "举报", "虚假", "骗局", "安全举报"] },
+  { id: "gen-007", category: "general", subcategory: "无障碍", priority: 5, question: "平台是否支持无障碍访问？", answer: "平台支持：键盘导航、深色模式（高对比度）、浏览器字体缩放。如有特殊需求请联系客服，我们会提供个性化协助。", keywords: ["无障碍", "残障", "屏幕阅读器", "辅助功能"] },
+  { id: "gen-008", category: "general", subcategory: "版本更新", priority: 5, question: "桌面版如何更新到最新版本？", answer: "桌面版目前为手动更新：\n1. 访问官网下载最新安装包\n2. 运行安装即可（自动覆盖旧版）\n3. 无需卸载旧版本\n\n当前版本号在桌面版标题栏可见。", keywords: ["更新", "升级", "新版本", "版本", "自动更新"] },
+];
