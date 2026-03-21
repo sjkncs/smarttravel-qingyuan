@@ -107,7 +107,7 @@ export async function geocode(address: string, city?: string): Promise<AmapGeoco
 export async function reverseGeocode(
   lng: number,
   lat: number
-): Promise<{ formatted_address: string; province: string; city: string; district: string; township: string }> {
+): Promise<{ formatted_address: string; province: string; city: string; district: string; township: string; adcode: string }> {
   const data = await amapRequest<{ regeocode: { formatted_address: string; addressComponent: Record<string, string> } }>(
     "/geocode/regeo",
     { location: `${lng},${lat}`, extensions: "base" }
@@ -119,6 +119,7 @@ export async function reverseGeocode(
     city: comp.city || "",
     district: comp.district || "",
     township: comp.township || "",
+    adcode: comp.adcode || "",
   };
 }
 

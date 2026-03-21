@@ -121,6 +121,7 @@ type AmapContainerProps = {
   showGeolocation?: boolean;
   onMapReady?: (map: AMap.Map) => void;
   onMarkerClick?: (marker: AmapMarkerData) => void;
+  onMapClick?: (lng: number, lat: number) => void;
   onLocationSuccess?: (lng: number, lat: number, address: string) => void;
   onError?: (msg: string) => void;
   style?: React.CSSProperties;
@@ -134,6 +135,7 @@ export default function AmapContainer({
   showGeolocation = true,
   onMapReady,
   onMarkerClick,
+  onMapClick,
   onLocationSuccess,
   onError,
   style,
@@ -192,6 +194,13 @@ export default function AmapContainer({
           offset: [0, -30],
           closeWhenClickMap: true,
         });
+
+        // 地图点击事件 → 传出坐标
+        map.on("click", ((...args: unknown[]) => {
+          const e = args[0] as { lnglat: { getLng(): number; getLat(): number } };
+          if (!e?.lnglat) return;
+          onMapClick?.(e.lnglat.getLng(), e.lnglat.getLat());
+        }) as (...args: unknown[]) => void);
 
         setLoading(false);
         onMapReady?.(map);

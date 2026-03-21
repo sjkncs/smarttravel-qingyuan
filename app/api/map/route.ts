@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
         const keywords = searchParams.get("keywords");
         if (!keywords) return NextResponse.json({ error: "keywords required" }, { status: 400 });
         const result = await searchPOI(keywords, {
-          city: searchParams.get("city") || "清远",
+          city: searchParams.get("city") || undefined,
           types: searchParams.get("types") || undefined,
           location: searchParams.get("location") || undefined,
           radius: searchParams.get("radius") ? parseInt(searchParams.get("radius")!) : undefined,

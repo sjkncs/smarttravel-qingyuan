@@ -87,6 +87,24 @@ export default function MapPage() {
   const heatmapRef = useRef<AMap.HeatMap | null>(null);
   const safetyMarkersRef = useRef<AMap.CircleMarker[]>([]);
 
+  // ── 选中地点详情 ──
+  type PlaceDetail = {
+    name: string;
+    address: string;
+    lng: number;
+    lat: number;
+    province: string;
+    city: string;
+    district: string;
+    adcode?: string;
+    weather?: { weather: string; temperature: string; humidity: string; winddirection: string; windpower: string };
+    nearbyPOI: { name: string; type: string; distance?: string; address: string; category: string }[];
+    route?: { distance: string; duration: string; strategy?: string };
+    loading: boolean;
+  };
+  const [placeDetail, setPlaceDetail] = useState<PlaceDetail | null>(null);
+  const [placeLoading, setPlaceLoading] = useState(false);
+
   // 村落标记数据 → AmapContainer markers
   const villageMarkers: AmapMarkerData[] = allVillages.map((v) => {
     const vsi = v.highlights.vsi;
@@ -117,24 +135,108 @@ export default function MapPage() {
     };
   });
 
-  // 获取实时天气 + 预报（通过后端代理）
+  // 获取实时天气 + 预报（通过后端代理）— 动态跟随选中地区
   const [liveForecast, setLiveForecast] = useState<{ date: string; dayweather: string; nightweather: string; daytemp: string; nighttemp: string }[]>([]);
-  useEffect(() => {
-    fetch("/api/map?action=weather&city=441802")
+  const [weatherCity, setWeatherCity] = useState("441802"); // 默认清远清城区
+  const [weatherCityName, setWeatherCityName] = useState("清远市");
+  const fetchWeatherForCity = useCallback((adcode: string, cityName?: string) => {
+    setWeatherCity(adcode);
+    if (cityName) setWeatherCityName(cityName);
+    fetch(`/api/map?action=weather&city=${adcode}`)
       .then((r) => r.json())
       .then((d) => { if (d.success && d.data?.live) setLiveWeather(d.data.live); })
       .catch(() => {});
-    fetch("/api/map?action=weather&city=441802&type=all")
+    fetch(`/api/map?action=weather&city=${adcode}&type=all`)
       .then((r) => r.json())
       .then((d) => { if (d.success && d.data?.forecasts) setLiveForecast(d.data.forecasts.slice(0, 3)); })
       .catch(() => {});
   }, []);
+  useEffect(() => { fetchWeatherForCity("441802", "清远市"); }, [fetchWeatherForCity]);
+
+  // ── 点击地图/搜索结果 → 获取地点详情 ──
+  const fetchPlaceDetail = useCallback(async (lng: number, lat: number) => {
+    setPlaceLoading(true);
+    setPlaceDetail({ name: "加载中...", address: "", lng, lat, province: "", city: "", district: "", nearbyPOI: [], loading: true });
+    try {
+      // 1. 逆地理编码
+      const regeoRes = await fetch(`/api/map?action=regeo&lng=${lng}&lat=${lat}`).then((r) => r.json());
+      const geo = regeoRes.data || {};
+      const placeName = geo.district || geo.city || geo.province || geo.formatted_address || "未知地点";
+      const adcode = geo.adcode || weatherCity;
+
+      // 2. 并行获取：天气 + 附近餐饮 + 附近酒店 + 附近景点 + 驾车路线
+      const loc = `${lng},${lat}`;
+      const [weatherRes, foodRes, hotelRes, scenicRes, routeRes] = await Promise.allSettled([
+        fetch(`/api/map?action=weather&city=${adcode}`).then((r) => r.json()),
+        fetch(`/api/map?action=nearby&lng=${lng}&lat=${lat}&types=050000&radius=5000`).then((r) => r.json()),
+        fetch(`/api/map?action=nearby&lng=${lng}&lat=${lat}&types=100000&radius=5000`).then((r) => r.json()),
+        fetch(`/api/map?action=nearby&lng=${lng}&lat=${lat}&types=110000&radius=5000`).then((r) => r.json()),
+        userLocation
+          ? fetch(`/api/map?action=driving&olng=${userLocation.lng}&olat=${userLocation.lat}&dlng=${lng}&dlat=${lat}`).then((r) => r.json())
+          : Promise.resolve(null),
+      ]);
+
+      const weather = weatherRes.status === "fulfilled" && weatherRes.value?.data?.live ? weatherRes.value.data.live : undefined;
+      const foods = foodRes.status === "fulfilled" && foodRes.value?.data ? foodRes.value.data.slice(0, 3) : [];
+      const hotels = hotelRes.status === "fulfilled" && hotelRes.value?.data ? hotelRes.value.data.slice(0, 3) : [];
+      const scenics = scenicRes.status === "fulfilled" && scenicRes.value?.data ? scenicRes.value.data.slice(0, 3) : [];
+      const route = routeRes.status === "fulfilled" && routeRes.value?.data ? routeRes.value.data : null;
+
+      const nearbyPOI = [
+        ...foods.map((p: { name: string; type: string; distance?: string; address?: string }) => ({ ...p, address: p.address || "", category: "餐饮" })),
+        ...hotels.map((p: { name: string; type: string; distance?: string; address?: string }) => ({ ...p, address: p.address || "", category: "住宿" })),
+        ...scenics.map((p: { name: string; type: string; distance?: string; address?: string }) => ({ ...p, address: p.address || "", category: "景点" })),
+      ];
+
+      setPlaceDetail({
+        name: placeName,
+        address: geo.formatted_address || "",
+        lng, lat,
+        province: geo.province || "",
+        city: geo.city || "",
+        district: geo.district || "",
+        adcode,
+        weather,
+        nearbyPOI,
+        route: route ? { distance: route.distance, duration: route.duration } : undefined,
+        loading: false,
+      });
+
+      // 同步更新天气面板到该地区
+      fetchWeatherForCity(adcode, geo.city || geo.district || placeName);
+    } catch {
+      setPlaceDetail(null);
+    }
+    setPlaceLoading(false);
+  }, [userLocation, weatherCity, fetchWeatherForCity]);
+
+  // ── 地图点击处理 ──
+  const handleMapClick = useCallback((lng: number, lat: number) => {
+    // 移动地图到点击位置
+    mapRef.current?.setCenter([lng, lat]);
+    mapRef.current?.setZoom(13);
+    fetchPlaceDetail(lng, lat);
+  }, [fetchPlaceDetail]);
+
+  // ── 搜索结果点击 → 自动定位 + 获取详情 ──
+  const handlePOIClick = useCallback((poi: { name: string; location: string }) => {
+    setShowPOI(false);
+    setSearchQuery(poi.name);
+    if (poi.location) {
+      const [lng, lat] = poi.location.split(",").map(Number);
+      if (!isNaN(lng) && !isNaN(lat)) {
+        mapRef.current?.setCenter([lng, lat]);
+        mapRef.current?.setZoom(15);
+        fetchPlaceDetail(lng, lat);
+      }
+    }
+  }, [fetchPlaceDetail]);
 
   // POI 搜索（通过后端代理，避免前端暴露 key）
   useEffect(() => {
     if (!searchQuery || searchQuery.length < 2) { setPoiSearchResults([]); return; }
     const timer = setTimeout(() => {
-      fetch(`/api/map?action=poi&keywords=${encodeURIComponent(searchQuery)}&city=清远`)
+      fetch(`/api/map?action=poi&keywords=${encodeURIComponent(searchQuery)}`)
         .then((r) => r.json())
         .then((d) => {
           if (d.success && d.data?.pois) {
@@ -303,6 +405,7 @@ export default function MapPage() {
                       showGeolocation
                       onMapReady={(map) => { mapRef.current = map; }}
                       onMarkerClick={(marker) => setSelectedMarker(marker.id)}
+                      onMapClick={handleMapClick}
                       onLocationSuccess={(lng, lat, addr) => {
                         setUserLocation({ lat, lng });
                         setNearbyList(getNearbyVillages(lat, lng, 300));
@@ -363,13 +466,13 @@ export default function MapPage() {
                           className="absolute top-full mt-2 w-full bg-white dark:bg-gray-900 border border-border rounded-xl shadow-xl overflow-hidden z-20"
                         >
                           {(poiSearchResults.length > 0 ? poiSearchResults : poiResults).map((poi, idx) => (
-                            <button key={`${poi.name}-${idx}`} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors text-left border-b border-border last:border-0" onClick={() => setShowPOI(false)}>
+                            <button key={`${poi.name}-${idx}`} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors text-left border-b border-border last:border-0" onClick={() => handlePOIClick(poi as { name: string; location: string })}>
                               <MapPin className="h-4 w-4 text-emerald-500 shrink-0" />
                               <div className="flex-1 min-w-0">
                                 <div className="text-sm font-medium truncate">{poi.name}</div>
                                 <div className="text-xs text-muted-foreground">{poi.type}{poi.distance ? ` · ${poi.distance}m` : ""}</div>
                               </div>
-                              <Navigation className="h-3 w-3 text-muted-foreground" />
+                              <Navigation className="h-3 w-3 text-emerald-600" />
                             </button>
                           ))}
                         </motion.div>
@@ -382,7 +485,7 @@ export default function MapPage() {
                     <div className="absolute bottom-4 left-4 bg-white/90 dark:bg-black/70 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-border z-10">
                       <div className="flex items-center gap-2 mb-1">
                         <Cloud className="h-4 w-4 text-sky-500" />
-                        <span className="text-sm font-medium">{liveWeather ? (locale === "zh" ? "清远市" : "Qingyuan") : weatherData.location}</span>
+                        <span className="text-sm font-medium">{liveWeather ? weatherCityName : weatherData.location}</span>
                         <span className="text-lg">{liveWeather ? (liveWeather.weather.includes("晴") ? "☀️" : liveWeather.weather.includes("雨") ? "🌧" : "⛅") : "⛅"}</span>
                       </div>
                       <div className="grid grid-cols-3 gap-3 text-xs">
@@ -414,6 +517,110 @@ export default function MapPage() {
                   </div>
                 </div>
               </div>
+
+              {/* ── 地点详情面板 ── */}
+              <AnimatePresence>
+                {placeDetail && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-card/80 backdrop-blur-sm overflow-hidden mt-4"
+                  >
+                    <div className="p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="text-lg font-bold flex items-center gap-2">
+                            <MapPin className="h-5 w-5 text-emerald-600" />
+                            {placeDetail.name}
+                          </h3>
+                          {placeDetail.address && (
+                            <p className="text-xs text-muted-foreground mt-1">📍 {placeDetail.address}</p>
+                          )}
+                          <p className="text-[11px] text-muted-foreground mt-0.5">
+                            {placeDetail.lat.toFixed(4)}°N, {placeDetail.lng.toFixed(4)}°E
+                          </p>
+                        </div>
+                        <button onClick={() => setPlaceDetail(null)} className="p-1 rounded-lg hover:bg-muted transition-colors">
+                          <span className="text-muted-foreground text-lg leading-none">&times;</span>
+                        </button>
+                      </div>
+
+                      {placeDetail.loading ? (
+                        <div className="flex items-center justify-center py-8">
+                          <div className="h-6 w-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                          <span className="ml-2 text-sm text-muted-foreground">正在获取当地信息...</span>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          {/* 当地天气 */}
+                          {placeDetail.weather && (
+                            <div className="flex items-center gap-3 p-3 rounded-xl bg-sky-50 dark:bg-sky-900/20 border border-sky-100 dark:border-sky-800">
+                              <span className="text-2xl">
+                                {placeDetail.weather.weather.includes("晴") ? "☀️" : placeDetail.weather.weather.includes("雨") ? "🌧" : placeDetail.weather.weather.includes("阴") ? "☁️" : "⛅"}
+                              </span>
+                              <div className="flex-1">
+                                <div className="text-sm font-semibold">{placeDetail.weather.weather} {placeDetail.weather.temperature}°C</div>
+                                <div className="text-xs text-muted-foreground">
+                                  湿度 {placeDetail.weather.humidity}% · {placeDetail.weather.winddirection}风{placeDetail.weather.windpower}级
+                                </div>
+                              </div>
+                              <Cloud className="h-4 w-4 text-sky-500" />
+                            </div>
+                          )}
+
+                          {/* 驾车路线 */}
+                          {placeDetail.route && (
+                            <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800">
+                              <Route className="h-5 w-5 text-emerald-600" />
+                              <div className="flex-1">
+                                <div className="text-sm font-semibold">
+                                  驾车 {(Number(placeDetail.route.distance) / 1000).toFixed(1)}km · 约{Math.round(Number(placeDetail.route.duration) / 60)}分钟
+                                </div>
+                                <div className="text-xs text-muted-foreground">从当前位置出发 · 实时路线规划</div>
+                              </div>
+                              <Navigation className="h-4 w-4 text-emerald-500" />
+                            </div>
+                          )}
+
+                          {/* 附近推荐 */}
+                          {placeDetail.nearbyPOI.length > 0 && (
+                            <div>
+                              <h4 className="text-sm font-semibold mb-2 flex items-center gap-1.5">
+                                <Search className="h-3.5 w-3.5 text-amber-500" />
+                                附近推荐
+                              </h4>
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                {["餐饮", "住宿", "景点"].map((cat) => {
+                                  const items = placeDetail.nearbyPOI.filter((p) => p.category === cat);
+                                  if (items.length === 0) return null;
+                                  const catIcon = cat === "餐饮" ? "🍽️" : cat === "住宿" ? "🏨" : "🎯";
+                                  const catColor = cat === "餐饮" ? "text-orange-600" : cat === "住宿" ? "text-blue-600" : "text-purple-600";
+                                  return (
+                                    <div key={cat} className="p-2.5 rounded-lg bg-muted/50 border border-border">
+                                      <div className={`text-xs font-semibold mb-1.5 ${catColor}`}>{catIcon} {cat}</div>
+                                      {items.map((p, i) => (
+                                        <div key={`${p.name}-${i}`} className="text-xs mb-1 last:mb-0">
+                                          <div className="font-medium truncate">{p.name}</div>
+                                          {p.distance && <span className="text-muted-foreground">{(Number(p.distance) / 1000).toFixed(1)}km</span>}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+
+                          {placeDetail.nearbyPOI.length === 0 && !placeDetail.route && !placeDetail.weather && (
+                            <p className="text-xs text-muted-foreground text-center py-4">该地点暂无详细信息</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <div className="space-y-4">
