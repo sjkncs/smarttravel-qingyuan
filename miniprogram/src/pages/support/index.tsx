@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
-import { View, Text, Input, ScrollView } from '@tarojs/components';
+import { View, Text, Input, ScrollView, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { chatWithSupport } from '@/utils/api';
+import { CHAT_ICONS } from '@/utils/icons';
 import './index.scss';
 
 interface Message {
@@ -24,7 +25,7 @@ export default function SupportPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 0, role: 'ai',
-      content: '你好！我是智游清远客服小助手 🤖\n\n我可以帮你处理：\n• 账号问题（封禁/解封/申诉）\n• 支付与退款\n• 行程问题\n• 论坛举报\n• 其他咨询\n\n💡 复杂问题我会自动转接人工客服',
+      content: '你好！我是智游清远客服小助手\n\n我可以帮你处理：\n• 账号问题（封禁/解封/申诉）\n• 支付与退款\n• 行程问题\n• 论坛举报\n• 其他咨询\n\n复杂问题我会自动转接人工客服',
       time: '现在',
     },
   ]);
@@ -60,7 +61,7 @@ export default function SupportPage() {
       if (res.escalated || res.status === 'HUMAN_QUEUE') {
         const sysMsg: Message = {
           id: Date.now() + 1, role: 'system',
-          content: '🔄 已转接人工客服，请稍候...',
+          content: '已转接人工客服，请稍候...',
           time: now,
         };
         setMessages(prev => [...prev, sysMsg]);
@@ -77,7 +78,7 @@ export default function SupportPage() {
     } catch {
       const errMsg: Message = {
         id: Date.now() + 1, role: 'ai',
-        content: '网络出了点问题，请检查网络后重试 😅',
+        content: '网络出了点问题，请检查网络后重试',
         time: now,
       };
       setMessages(prev => [...prev, errMsg]);
@@ -111,7 +112,7 @@ export default function SupportPage() {
           <View key={msg.id} id={`msg-${msg.id}`} className={`msg-row ${msg.role}`}>
             {msg.role !== 'user' && (
               <View className={`msg-avatar ${msg.role}`}>
-                <Text>{msg.role === 'system' ? '📢' : '🤖'}</Text>
+                <Image src={msg.role === 'system' ? CHAT_ICONS.system : CHAT_ICONS.robot} className='avatar-icon' />
               </View>
             )}
             <View className={`msg-bubble ${msg.role}`}>
@@ -121,7 +122,7 @@ export default function SupportPage() {
         ))}
         {loading && (
           <View className='msg-row ai'>
-            <View className='msg-avatar ai'><Text>🤖</Text></View>
+            <View className='msg-avatar ai'><Image src={CHAT_ICONS.robot} className='avatar-icon' /></View>
             <View className='msg-bubble ai typing'>
               <Text className='msg-text'>正在处理...</Text>
             </View>
@@ -134,9 +135,9 @@ export default function SupportPage() {
             <Text className='rate-title'>对本次服务满意吗？</Text>
             <View className='rate-stars'>
               {[1, 2, 3, 4, 5].map(s => (
-                <Text key={s} className='rate-star' onClick={() => handleRate(s)}>
-                  {s <= 3 ? '⭐' : '⭐'}
-                </Text>
+                <View key={s} className='rate-star' onClick={() => handleRate(s)}>
+                  <Image src={CHAT_ICONS.starFilled} className='star-icon' />
+                </View>
               ))}
             </View>
           </View>
@@ -146,7 +147,7 @@ export default function SupportPage() {
       {/* Quick Actions */}
       {messages.length <= 1 && (
         <View className='quick-section'>
-          <Text className='quick-title'>常见问题 👇</Text>
+          <Text className='quick-title'>常见问题</Text>
           <View className='quick-list'>
             {quickActions.map((q, i) => (
               <View key={i} className='quick-item' onClick={() => sendMessage(q)}>

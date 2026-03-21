@@ -26,15 +26,20 @@
   background: #f0fdf4; border-radius: 12px; padding: 16px;
   margin-bottom: 12px; border: 1px solid #d1fae5;
 }
-.ai-label { font-size: 20px; color: #059669; font-weight: bold; display: block; margin-bottom: 6px; }
+.ai-label-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.ai-label { font-size: 20px; color: #059669; font-weight: bold; }
+.forum-icon { width: 28px; height: 28px; }
+.forum-icon-sm { width: 22px; height: 22px; }
 .ai-text { font-size: 22px; color: #333; line-height: 1.5; display: block; }
 
 .post-footer {
   display: flex; align-items: center; justify-content: space-between;
   padding-top: 12px; border-top: 1px solid #f5f5f5;
 }
+.post-author-row { display: flex; align-items: center; gap: 6px; }
 .post-author { font-size: 22px; color: #666; }
 .post-stats { display: flex; gap: 16px; font-size: 22px; color: #999; }
+.stat-row { display: flex; align-items: center; gap: 4px; }
 .post-tags { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 
 .fab {
@@ -44,7 +49,7 @@
   justify-content: center; box-shadow: 0 4px 20px rgba(5,150,105,0.4);
   z-index: 100;
 }
-.fab-icon { font-size: 36px; }
+.fab-icon-img { width: 36px; height: 36px; }
 
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.5);
@@ -89,6 +94,7 @@
   margin-top: 16px; padding: 12px; background: #fefce8;
   border-radius: 12px; border: 1px solid #fef08a;
 }
+.notice-row { display: flex; align-items: center; gap: 6px; }
 .notice-text { font-size: 20px; color: #92400e; }
 
 .loading, .empty { text-align: center; padding: 80px 0; color: #999; font-size: 26px; }

@@ -3,6 +3,7 @@ import { View, Text, Input, ScrollView, Image } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { getVillages } from '@/utils/api';
 import { getVillageImage } from '@/utils/images';
+import { DETAIL_ICONS, ACTION_ICONS } from '@/utils/icons';
 import './index.scss';
 
 interface Village {
@@ -62,7 +63,7 @@ export default function ExplorePage() {
     <View className='explore-page'>
       {/* Search */}
       <View className='search-bar'>
-        <Text className='search-icon'>🔍</Text>
+        <Image src={ACTION_ICONS.mapPin} className='search-icon-img' />
         <Input
           className='search-input'
           placeholder='搜索村落、景点、活动...'
@@ -102,10 +103,14 @@ export default function ExplorePage() {
                 <View className='card-header'>
                   <Text className='card-name'>{village.name}</Text>
                   <View className='card-rating'>
-                    <Text>⭐ {village.rating}</Text>
+                    <Image src={DETAIL_ICONS.star} className='explore-icon-sm' />
+                    <Text>{village.rating}</Text>
                   </View>
                 </View>
-                <Text className='card-location'>📍 {village.location}</Text>
+                <View className='card-location-row'>
+                  <Image src={ACTION_ICONS.mapPin} className='explore-icon-sm' />
+                  <Text className='card-location'>{village.location}</Text>
+                </View>
                 <Text className='card-desc'>{village.description.slice(0, 50)}...</Text>
                 <View className='card-scores'>
                   <View className='score-badge rai'>RAI {village.raiScore}</View>

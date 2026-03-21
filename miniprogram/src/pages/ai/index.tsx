@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
-import { View, Text, Input, ScrollView } from '@tarojs/components';
+import { View, Text, Input, ScrollView, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { chatWithAI } from '@/utils/api';
+import { CHAT_ICONS } from '@/utils/icons';
 import './index.scss';
 
 interface Message {
@@ -24,7 +25,7 @@ export default function AIPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 0, role: 'ai',
-      content: '你好！我是智游清远AI助手 🤖\n\n我可以帮你：\n• 推荐适合你的清远村落\n• 规划行程路线\n• 解答旅行问题\n• 介绍瑶族/壮族文化\n\n试试问我吧！',
+      content: '你好！我是智游清远AI助手\n\n我可以帮你：\n• 推荐适合你的清远村落\n• 规划行程路线\n• 解答旅行问题\n• 介绍瑶族/壮族文化\n\n试试问我吧！',
       time: '现在',
     },
   ]);
@@ -59,7 +60,7 @@ export default function AIPage() {
     } catch (err) {
       const errMsg: Message = {
         id: Date.now() + 1, role: 'ai',
-        content: '网络出了点问题，请检查网络后重试 😅',
+        content: '网络出了点问题，请检查网络后重试',
         time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages(prev => [...prev, errMsg]);
@@ -79,6 +80,11 @@ export default function AIPage() {
       >
         {messages.map(msg => (
           <View key={msg.id} id={`msg-${msg.id}`} className={`msg-row ${msg.role}`}>
+            {msg.role === 'ai' && (
+              <View className='msg-avatar'>
+                <Image src={CHAT_ICONS.robot} className='ai-avatar-icon' />
+              </View>
+            )}
             <View className={`msg-bubble ${msg.role}`}>
               <Text className='msg-text'>{msg.content}</Text>
             </View>
@@ -97,7 +103,7 @@ export default function AIPage() {
       {/* Quick Questions */}
       {messages.length <= 1 && (
         <View className='quick-questions'>
-          <Text className='quick-title'>试试这些问题 👇</Text>
+          <Text className='quick-title'>试试这些问题</Text>
           <View className='quick-list'>
             {quickQuestions.map((q, i) => (
               <View key={i} className='quick-item' onClick={() => sendMessage(q)}>

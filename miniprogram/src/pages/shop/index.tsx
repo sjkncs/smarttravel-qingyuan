@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { getProductImage } from '@/utils/images';
+import { SHOP_ICONS, ACTION_ICONS } from '@/utils/icons';
 import './index.scss';
 
 interface Product {
@@ -50,11 +51,11 @@ const mockProducts: Product[] = [
 ];
 
 const categories = [
-  { id: 'all', label: '全部', icon: '🏪' },
-  { id: 'tea', label: '茗茶', icon: '🍵' },
-  { id: 'food', label: '美食', icon: '🍗' },
-  { id: 'craft', label: '手工艺', icon: '🧵' },
-  { id: 'fruit', label: '鲜果', icon: '🍐' },
+  { id: 'all', label: '全部', icon: SHOP_ICONS.all },
+  { id: 'tea', label: '茗茶', icon: SHOP_ICONS.tea },
+  { id: 'food', label: '美食', icon: SHOP_ICONS.food },
+  { id: 'craft', label: '手工艺', icon: SHOP_ICONS.craft },
+  { id: 'fruit', label: '鲜果', icon: SHOP_ICONS.fruit },
 ];
 
 export default function ShopPage() {
@@ -83,7 +84,7 @@ export default function ShopPage() {
             className={`cat-item ${activeCategory === cat.id ? 'active' : ''}`}
             onClick={() => setActiveCategory(cat.id)}
           >
-            <Text className='cat-icon'>{cat.icon}</Text>
+            <Image src={cat.icon} className='cat-icon-img' />
             <Text className='cat-label'>{cat.label}</Text>
           </View>
         ))}
@@ -120,7 +121,10 @@ export default function ShopPage() {
                 </View>
                 <Text className='sales'>已售{product.sales}</Text>
               </View>
-              <Text className='product-village'>📍 {product.village}</Text>
+              <View className='product-village-row'>
+                <Image src={ACTION_ICONS.mapPin} className='village-pin' />
+                <Text className='product-village'>{product.village}</Text>
+              </View>
             </View>
           </View>
         ))}

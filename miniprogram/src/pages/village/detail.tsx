@@ -3,6 +3,7 @@ import { View, Text, Image } from '@tarojs/components';
 import Taro, { useRouter, useShareAppMessage } from '@tarojs/taro';
 import { getVillageDetail } from '@/utils/api';
 import { getVillageImage } from '@/utils/images';
+import { DETAIL_ICONS, ACTION_ICONS } from '@/utils/icons';
 import './detail.scss';
 
 interface VillageData {
@@ -76,7 +77,10 @@ export default function VillageDetailPage() {
         <View className='hero-overlay'>
           <Text className='hero-name'>{village.name}</Text>
           <Text className='hero-name-en'>{village.nameEn}</Text>
-          <Text className='hero-location'>📍 {village.location}</Text>
+          <View className='hero-location-row'>
+            <Image src={ACTION_ICONS.mapPin} className='detail-icon-sm' />
+            <Text className='hero-location'>{village.location}</Text>
+          </View>
         </View>
       </View>
 
@@ -101,22 +105,22 @@ export default function VillageDetailPage() {
       {/* Info */}
       <View className='info-card'>
         <View className='info-row'>
-          <Text className='info-label'>⭐ 评分</Text>
+          <View className='info-label-row'><Image src={DETAIL_ICONS.star} className='detail-icon' /><Text className='info-label'>评分</Text></View>
           <Text className='info-value'>{village.rating} / 5.0（{village.reviewCount}条评价）</Text>
         </View>
         <View className='info-row'>
-          <Text className='info-label'>🗓️ 最佳季节</Text>
+          <View className='info-label-row'><Image src={DETAIL_ICONS.calendar} className='detail-icon' /><Text className='info-label'>最佳季节</Text></View>
           <Text className='info-value'>{village.season}</Text>
         </View>
         <View className='info-row'>
-          <Text className='info-label'>👥 累计游客</Text>
+          <View className='info-label-row'><Image src={DETAIL_ICONS.visitors} className='detail-icon' /><Text className='info-label'>累计游客</Text></View>
           <Text className='info-value'>{village.visitors.toLocaleString()}人</Text>
         </View>
       </View>
 
       {/* Description */}
       <View className='section-card'>
-        <Text className='section-title'>📖 村落简介</Text>
+        <View className='section-title-row'><Image src={DETAIL_ICONS.book} className='detail-icon' /><Text className='section-title'>村落简介</Text></View>
         <Text className='section-text'>{village.description}</Text>
         <View className='tags-wrap'>
           {village.tags.map(tag => (
@@ -128,7 +132,7 @@ export default function VillageDetailPage() {
       {/* Activities */}
       {village.detail?.activities && (
         <View className='section-card'>
-          <Text className='section-title'>🎯 推荐活动</Text>
+          <View className='section-title-row'><Image src={DETAIL_ICONS.target} className='detail-icon' /><Text className='section-title'>推荐活动</Text></View>
           <View className='activities'>
             {village.detail.activities.map((act, i) => (
               <View key={i} className='activity-item'>
@@ -143,9 +147,9 @@ export default function VillageDetailPage() {
       {/* Transport & Tips */}
       {village.detail && (
         <View className='section-card'>
-          <Text className='section-title'>🚗 交通指南</Text>
+          <View className='section-title-row'><Image src={DETAIL_ICONS.transport} className='detail-icon' /><Text className='section-title'>交通指南</Text></View>
           <Text className='section-text'>{village.detail.transport}</Text>
-          <Text className='section-title tips-title'>💡 温馨提示</Text>
+          <View className='section-title-row tips-title'><Image src={DETAIL_ICONS.tip} className='detail-icon' /><Text className='section-title'>温馨提示</Text></View>
           <Text className='section-text'>{village.detail.tips}</Text>
         </View>
       )}
@@ -153,10 +157,10 @@ export default function VillageDetailPage() {
       {/* Actions */}
       <View className='action-bar'>
         <View className='action-btn secondary' onClick={() => Taro.showToast({ title: '已收藏', icon: 'success' })}>
-          <Text>❤️ 收藏</Text>
+          <View className='action-btn-inner'><Image src={DETAIL_ICONS.heartFill} className='detail-icon-sm' /><Text>收藏</Text></View>
         </View>
         <View className='action-btn primary' onClick={() => Taro.switchTab({ url: '/pages/ai/index' })}>
-          <Text>🤖 AI规划行程</Text>
+          <View className='action-btn-inner'><Image src={DETAIL_ICONS.aiPlan} className='detail-icon-sm' /><Text>AI规划行程</Text></View>
         </View>
       </View>
     </View>

@@ -3,6 +3,7 @@ import { View, Text, Map, Image, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { getVillages } from '@/utils/api';
 import { getVillageImage } from '@/utils/images';
+import { ACTION_ICONS, DETAIL_ICONS, NAV_ICONS } from '@/utils/icons';
 import './index.scss';
 
 interface Village {
@@ -75,7 +76,7 @@ export default function MapPage() {
           width: 30,
           height: 30,
           callout: {
-            content: `${v.name}\n⭐${v.rating} · RAI ${v.raiScore}`,
+            content: `${v.name}\n${v.rating} · RAI ${v.raiScore}`,
             display: 'ALWAYS',
             borderRadius: 8,
             padding: 8,
@@ -134,7 +135,10 @@ export default function MapPage() {
       {/* Village List Bottom Sheet */}
       <View className='bottom-sheet'>
         <View className='sheet-handle' />
-        <Text className='sheet-title'>📍 清远村落</Text>
+        <View className='sheet-title-row'>
+          <Image src={ACTION_ICONS.mapPin} className='map-icon' />
+          <Text className='sheet-title'>清远村落</Text>
+        </View>
 
         <ScrollView scrollX className='village-chips'>
           {villages.map(v => (
@@ -165,9 +169,12 @@ export default function MapPage() {
             />
             <View className='detail-info'>
               <Text className='detail-name'>{selectedVillage.name}</Text>
-              <Text className='detail-location'>📍 {selectedVillage.location}</Text>
+              <View className='detail-location-row'>
+                <Image src={ACTION_ICONS.mapPin} className='map-icon-sm' />
+                <Text className='detail-location'>{selectedVillage.location}</Text>
+              </View>
               <View className='detail-meta'>
-                <Text className='detail-rating'>⭐ {selectedVillage.rating}</Text>
+                <View className='detail-rating'><Image src={DETAIL_ICONS.star} className='map-icon-sm' /><Text>{selectedVillage.rating}</Text></View>
                 <Text className='detail-rai'>RAI {selectedVillage.raiScore}</Text>
               </View>
               <View className='detail-tags'>
@@ -177,13 +184,13 @@ export default function MapPage() {
               </View>
               <View className='detail-actions'>
                 <View className='action-btn nav' onClick={() => navigateTo(selectedVillage)}>
-                  <Text>🧭 导航</Text>
+                  <View className='action-btn-inner'><Image src={NAV_ICONS.compass} className='map-icon-sm' /><Text>导航</Text></View>
                 </View>
                 <View className='action-btn view' onClick={() => goToDetail(selectedVillage.slug)}>
-                  <Text>📖 详情</Text>
+                  <View className='action-btn-inner'><Image src={NAV_ICONS.detail} className='map-icon-sm' /><Text>详情</Text></View>
                 </View>
                 <View className='action-btn plan' onClick={() => Taro.navigateTo({ url: '/pages/planner/index' })}>
-                  <Text>🤖 规划</Text>
+                  <View className='action-btn-inner'><Image src={NAV_ICONS.plan} className='map-icon-sm' /><Text>规划</Text></View>
                 </View>
               </View>
             </View>

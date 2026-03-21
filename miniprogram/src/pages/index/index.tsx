@@ -3,6 +3,7 @@ import { View, Text, Image, ScrollView } from '@tarojs/components';
 import Taro, { useShareAppMessage, usePullDownRefresh } from '@tarojs/taro';
 import { getVillages } from '@/utils/api';
 import { BANNER_IMAGES, getVillageImage, ACTIVITY_IMAGES } from '@/utils/images';
+import { ACTION_ICONS, DETAIL_ICONS } from '@/utils/icons';
 import './index.scss';
 
 interface Village {
@@ -45,12 +46,12 @@ export default function IndexPage() {
   useEffect(() => { loadData(); }, []);
 
   const quickActions = [
-    { icon: '🤖', label: 'AI规划', action: () => Taro.switchTab({ url: '/pages/ai/index' }) },
-    { icon: '📍', label: '附近村落', action: () => Taro.switchTab({ url: '/pages/explore/index' }) },
-    { icon: '�️', label: '地图导航', action: () => Taro.navigateTo({ url: '/pages/map/index' }) },
-    { icon: '🛒', label: '特产商城', action: () => Taro.navigateTo({ url: '/pages/shop/index' }) },
-    { icon: '🗓️', label: '行程规划', action: () => Taro.navigateTo({ url: '/pages/planner/index' }) },
-    { icon: '🎧', label: '在线客服', action: () => Taro.navigateTo({ url: '/pages/support/index' }) },
+    { icon: ACTION_ICONS.ai, label: 'AI规划', action: () => Taro.switchTab({ url: '/pages/ai/index' }) },
+    { icon: ACTION_ICONS.mapPin, label: '附近村落', action: () => Taro.switchTab({ url: '/pages/explore/index' }) },
+    { icon: ACTION_ICONS.map, label: '地图导航', action: () => Taro.navigateTo({ url: '/pages/map/index' }) },
+    { icon: ACTION_ICONS.cart, label: '特产商城', action: () => Taro.navigateTo({ url: '/pages/shop/index' }) },
+    { icon: ACTION_ICONS.calendar, label: '行程规划', action: () => Taro.navigateTo({ url: '/pages/planner/index' }) },
+    { icon: ACTION_ICONS.headset, label: '在线客服', action: () => Taro.navigateTo({ url: '/pages/support/index' }) },
   ];
 
   const goToVillage = (slug: string) => {
@@ -63,11 +64,11 @@ export default function IndexPage() {
       <View className='header'>
         <View className='header-top'>
           <View>
-            <Text className='greeting'>你好，旅行者 👋</Text>
+            <Text className='greeting'>你好，旅行者</Text>
             <Text className='weather'>清远 · 晴 28°C</Text>
           </View>
           <View className='header-bell' onClick={() => Taro.showToast({ title: '暂无新消息', icon: 'none' })}>
-            🔔
+            <Image src={ACTION_ICONS.bell} className='bell-icon' />
           </View>
         </View>
       </View>
@@ -76,7 +77,9 @@ export default function IndexPage() {
       <View className='quick-actions'>
         {quickActions.map(item => (
           <View key={item.label} className='action-item' onClick={item.action}>
-            <View className='action-icon'>{item.icon}</View>
+            <View className='action-icon'>
+              <Image src={item.icon} className='action-icon-img' />
+            </View>
             <Text className='action-label'>{item.label}</Text>
           </View>
         ))}
@@ -141,8 +144,14 @@ export default function IndexPage() {
                 <View className='village-info'>
                   <Text className='village-name'>{village.name}</Text>
                   <View className='village-meta'>
-                    <Text className='village-rating'>⭐ {village.rating}</Text>
-                    <Text className='village-location'>📍 {village.location}</Text>
+                    <View className='village-rating'>
+                      <Image src={DETAIL_ICONS.star} className='inline-icon' />
+                      <Text>{village.rating}</Text>
+                    </View>
+                    <View className='village-location'>
+                      <Image src={ACTION_ICONS.mapPin} className='inline-icon' />
+                      <Text>{village.location}</Text>
+                    </View>
                   </View>
                   <View className='village-tags'>
                     {village.tags.slice(0, 2).map(tag => (

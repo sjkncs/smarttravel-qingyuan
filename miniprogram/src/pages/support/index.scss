@@ -54,6 +54,7 @@
   &.ai { background: #d1fae5; }
   &.system { background: #fef3c7; }
 }
+.avatar-icon { width: 24px; height: 24px; }
 
 .msg-bubble {
   max-width: 70%;
@@ -101,8 +102,11 @@
     gap: 8px;
   }
   .rate-star {
-    font-size: 24px;
     padding: 4px;
+  }
+  .star-icon {
+    width: 28px;
+    height: 28px;
   }
 }
 

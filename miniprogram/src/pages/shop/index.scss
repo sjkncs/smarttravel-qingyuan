@@ -9,7 +9,7 @@
   padding: 12px 24px; margin-right: 16px; border-radius: 16px;
   &.active { background: #d1fae5; }
 }
-.cat-icon { font-size: 36px; margin-bottom: 4px; }
+.cat-icon-img { width: 36px; height: 36px; margin-bottom: 4px; }
 .cat-label { font-size: 22px; color: #333; }
 
 .product-grid {
@@ -59,4 +59,6 @@
   font-size: 20px; color: #ccc; text-decoration: line-through;
 }
 .sales { font-size: 18px; color: #999; }
-.product-village { font-size: 18px; color: #059669; display: block; }
+.product-village-row { display: flex; align-items: center; gap: 4px; }
+.village-pin { width: 20px; height: 20px; }
+.product-village { font-size: 18px; color: #059669; }

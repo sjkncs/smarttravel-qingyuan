@@ -3,15 +3,16 @@ import { View, Text, Input, ScrollView, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { chatWithAI } from '@/utils/api';
 import { getVillageImage, ACTIVITY_IMAGES } from '@/utils/images';
+import { PLANNER_ICONS, SOCIAL_ICONS, DETAIL_ICONS, MENU_ICONS } from '@/utils/icons';
 import './index.scss';
 
 const presets = [
-  { label: '亲子游', days: 2, budget: 1500, icon: '👨‍👩‍👧' },
-  { label: '情侣游', days: 3, budget: 2000, icon: '💑' },
-  { label: '摄影游', days: 2, budget: 1200, icon: '📷' },
-  { label: '文化游', days: 3, budget: 1800, icon: '🏛️' },
-  { label: '养生游', days: 2, budget: 2500, icon: '♨️' },
-  { label: '自驾游', days: 3, budget: 3000, icon: '🚗' },
+  { label: '亲子游', days: 2, budget: 1500, icon: PLANNER_ICONS.family },
+  { label: '情侣游', days: 3, budget: 2000, icon: PLANNER_ICONS.couple },
+  { label: '摄影游', days: 2, budget: 1200, icon: PLANNER_ICONS.camera },
+  { label: '文化游', days: 3, budget: 1800, icon: PLANNER_ICONS.culture },
+  { label: '养生游', days: 2, budget: 2500, icon: PLANNER_ICONS.spa },
+  { label: '自驾游', days: 3, budget: 3000, icon: PLANNER_ICONS.drive },
 ];
 
 const hotRoutes = [
@@ -85,7 +86,7 @@ export default function PlannerPage() {
           <View className='preset-grid'>
             {presets.map(p => (
               <View key={p.label} className='preset-card' onClick={() => usePreset(p)}>
-                <Text className='preset-icon'>{p.icon}</Text>
+                <Image src={p.icon} className='preset-icon-img' />
                 <Text className='preset-label'>{p.label}</Text>
                 <Text className='preset-info'>{p.days}天·¥{p.budget}</Text>
               </View>
@@ -144,7 +145,10 @@ export default function PlannerPage() {
               className={`generate-btn ${loading ? 'loading' : ''}`}
               onClick={() => !loading && generatePlan()}
             >
-              <Text className='btn-text'>{loading ? '🤖 AI生成中...' : '🤖 生成行程'}</Text>
+              <View className='btn-inner'>
+                <Image src={SOCIAL_ICONS.robot} className='btn-icon' />
+                <Text className='btn-text'>{loading ? 'AI生成中...' : '生成行程'}</Text>
+              </View>
             </View>
           </View>
         </View>
@@ -152,7 +156,10 @@ export default function PlannerPage() {
         {/* AI Generated Plan */}
         {plan && (
           <View className='section'>
-            <Text className='section-title'>🗓️ AI推荐行程</Text>
+            <View className='section-title-row'>
+              <Image src={DETAIL_ICONS.calendar} className='section-icon' />
+              <Text className='section-title'>AI推荐行程</Text>
+            </View>
             <View className='plan-card'>
               <Text className='plan-text'>{plan}</Text>
               <View className='plan-actions'>
@@ -160,10 +167,10 @@ export default function PlannerPage() {
                   Taro.setClipboardData({ data: plan });
                   Taro.showToast({ title: '行程已复制', icon: 'success' });
                 }}>
-                  <Text>📋 复制</Text>
+                  <View className='plan-btn-inner'><Image src={MENU_ICONS.order} className='plan-btn-icon' /><Text>复制</Text></View>
                 </View>
                 <View className='plan-btn save' onClick={() => Taro.showToast({ title: '已保存到我的行程', icon: 'success' })}>
-                  <Text>💾 保存</Text>
+                  <View className='plan-btn-inner'><Image src={MENU_ICONS.heart} className='plan-btn-icon' /><Text>保存</Text></View>
                 </View>
               </View>
             </View>
@@ -173,7 +180,7 @@ export default function PlannerPage() {
         {/* Hot Routes */}
         {!plan && (
           <View className='section'>
-            <Text className='section-title'>🔥 热门路线</Text>
+            <Text className='section-title'>热门路线</Text>
             {hotRoutes.map((route, i) => (
               <View key={i} className='route-card' onClick={() => generatePlan(`详细规划一下"${route.title}"的行程: ${route.desc}`)}>
                 <Image src={getVillageImage(route.img)} className='route-img' mode='aspectFill' />

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Button } from '@tarojs/components';
+import { View, Text, Button, Image } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import { getUserProfile, wxLogin, setToken, getToken } from '@/utils/api';
+import { MENU_ICONS, DEFAULT_AVATAR } from '@/utils/icons';
 import './index.scss';
 
 interface UserInfo {
@@ -13,13 +14,13 @@ interface UserInfo {
 }
 
 const menuItems = [
-  { icon: '📋', label: '我的订单', url: '/pages/shop/index' },
-  { icon: '🗺️', label: '我的行程', url: '/pages/planner/index' },
-  { icon: '�', label: '地图导航', url: '/pages/map/index' },
-  { icon: '❤️', label: '我的收藏', url: '' },
-  { icon: '�', label: '在线客服', url: '/pages/support/index' },
-  { icon: '📝', label: '我的帖子', url: '' },
-  { icon: '⚙️', label: '设置', url: '' },
+  { icon: MENU_ICONS.order, label: '我的订单', url: '/pages/shop/index' },
+  { icon: MENU_ICONS.trip, label: '我的行程', url: '/pages/planner/index' },
+  { icon: MENU_ICONS.location, label: '地图导航', url: '/pages/map/index' },
+  { icon: MENU_ICONS.heart, label: '我的收藏', url: '' },
+  { icon: MENU_ICONS.support, label: '在线客服', url: '/pages/support/index' },
+  { icon: MENU_ICONS.post, label: '我的帖子', url: '' },
+  { icon: MENU_ICONS.settings, label: '设置', url: '' },
 ];
 
 export default function ProfilePage() {
@@ -87,7 +88,7 @@ export default function ProfilePage() {
         {user ? (
           <View className='user-info'>
             <View className='avatar'>
-              <Text className='avatar-text'>{user.avatar || user.name[0]}</Text>
+              <Image src={user.avatar || DEFAULT_AVATAR} className='avatar-img' />
             </View>
             <View className='user-detail'>
               <Text className='user-name'>{user.name}</Text>
@@ -97,7 +98,7 @@ export default function ProfilePage() {
         ) : (
           <View className='login-section'>
             <View className='avatar'>
-              <Text className='avatar-text'>👤</Text>
+              <Image src={MENU_ICONS.user} className='avatar-img' />
             </View>
             <View className='user-detail'>
               <Text className='user-name'>未登录</Text>
@@ -136,7 +137,7 @@ export default function ProfilePage() {
         {menuItems.map((item, i) => (
           <View key={i} className='menu-item' onClick={() => handleMenuClick(item)}>
             <View className='menu-left'>
-              <Text className='menu-icon'>{item.icon}</Text>
+              <Image src={item.icon} className='menu-icon-img' />
               <Text className='menu-label'>{item.label}</Text>
             </View>
             <Text className='menu-arrow'>›</Text>

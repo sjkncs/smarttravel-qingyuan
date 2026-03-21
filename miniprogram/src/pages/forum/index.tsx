@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, Textarea, Input } from '@tarojs/components';
+import { View, Text, ScrollView, Textarea, Input, Image } from '@tarojs/components';
 import Taro, { usePullDownRefresh } from '@tarojs/taro';
 import { getForumPosts, createForumPost } from '@/utils/api';
+import { SOCIAL_ICONS } from '@/utils/icons';
 import './index.scss';
 
 interface Post {
@@ -141,16 +142,22 @@ export default function ForumPage() {
               <Text className='post-content'>{post.content.slice(0, 100)}{post.content.length > 100 ? '...' : ''}</Text>
               {post.aiSummary && (
                 <View className='ai-summary'>
-                  <Text className='ai-label'>🤖 AI解读</Text>
+                  <View className='ai-label-row'>
+                    <Image src={SOCIAL_ICONS.robot} className='forum-icon' />
+                    <Text className='ai-label'>AI解读</Text>
+                  </View>
                   <Text className='ai-text'>{post.aiSummary}</Text>
                 </View>
               )}
               <View className='post-footer'>
-                <Text className='post-author'>👤 {post.author}</Text>
+                <View className='post-author-row'>
+                  <Image src={SOCIAL_ICONS.userAvatar} className='forum-icon' />
+                  <Text className='post-author'>{post.author}</Text>
+                </View>
                 <View className='post-stats'>
-                  <Text>👍 {post.votes}</Text>
-                  <Text>👁️ {post.views}</Text>
-                  <Text>💬 {post.commentCount}</Text>
+                  <View className='stat-row'><Image src={SOCIAL_ICONS.thumbUp} className='forum-icon-sm' /><Text>{post.votes}</Text></View>
+                  <View className='stat-row'><Image src={SOCIAL_ICONS.eye} className='forum-icon-sm' /><Text>{post.views}</Text></View>
+                  <View className='stat-row'><Image src={SOCIAL_ICONS.comment} className='forum-icon-sm' /><Text>{post.commentCount}</Text></View>
                 </View>
               </View>
               {post.tags.length > 0 && (
@@ -171,7 +178,7 @@ export default function ForumPage() {
 
       {/* FAB */}
       <View className='fab' onClick={() => setShowNewPost(true)}>
-        <Text className='fab-icon'>✏️</Text>
+        <Image src={SOCIAL_ICONS.write} className='fab-icon-img' />
       </View>
 
       {/* New Post Modal */}
@@ -223,7 +230,10 @@ export default function ForumPage() {
             </View>
 
             <View className='moderation-notice'>
-              <Text className='notice-text'>📋 所有内容将通过AI智能审核，请遵守社区准则</Text>
+              <View className='notice-row'>
+                <Image src={SOCIAL_ICONS.moderation} className='forum-icon' />
+                <Text className='notice-text'>所有内容将通过AI智能审核，请遵守社区准则</Text>
+              </View>
             </View>
           </View>
         </View>
