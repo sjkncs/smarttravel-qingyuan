@@ -129,12 +129,12 @@ const comparisonFeatures = [
 
 const plans = [
   {
-    name: "成长版", nameEn: "Growth", price: "¥2,999", priceEn: "$399", period: "/月", periodEn: "/mo",
+    name: "成长版", nameEn: "Growth", price: "¥1,499", priceEn: "$199", period: "/月", periodEn: "/mo",
     desc: "中小型景区/旅行社数字化起步", descEn: "SMB tourism digitalization starter",
     features: ["5个管理员", "基础数据看板", "API 1,000次/天", "3个渠道接入", "邮件+工单支持", "标准SSL加密"],
   },
   {
-    name: "专业版", nameEn: "Professional", price: "¥9,999", priceEn: "$1,299", period: "/月", periodEn: "/mo",
+    name: "专业版", nameEn: "Professional", price: "¥4,999", priceEn: "$649", period: "/月", periodEn: "/mo",
     desc: "中大型企业全链路数字化", descEn: "Mid-large enterprise full-stack digitalization",
     popular: true,
     features: ["20个管理员", "全量数据看板+AI洞察", "API 50,000次/天", "15+渠道接入", "AI推荐引擎", "CBT报告导出", "专属客户经理", "7×12小时支持", "SOC2合规报告"],

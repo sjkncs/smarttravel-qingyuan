@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
 import { useI18n } from "@/lib/i18n";
 import Link from "next/link";
+import Image from "next/image";
 
 type PlanId = "explorer" | "pro" | "premium";
 type PayMethod = "alipay" | "wechat" | "unionpay" | "visa" | "mastercard";
@@ -104,11 +105,11 @@ const plans: PricingPlan[] = [
   },
 ];
 
-const AlipayIcon = () => <img src="/payment-icons/alipay.png" alt="支付宝" className="h-7 w-7 rounded object-contain" />;
-const WechatPayIcon = () => <img src="/payment-icons/wechat.png" alt="微信支付" className="h-7 w-7 rounded object-contain" />;
-const UnionPayIcon = () => <img src="/payment-icons/unionpay.png" alt="银联" className="h-7 w-7 rounded object-contain" />;
-const VisaIcon = () => <img src="/payment-icons/visa.png" alt="Visa" className="h-7 w-7 rounded object-contain" />;
-const MastercardIcon = () => <img src="/payment-icons/mastercard.png" alt="Mastercard" className="h-7 w-7 rounded object-contain" />;
+const AlipayIcon = () => <Image src="/payment-icons/alipay.png" alt="支付宝" width={28} height={28} className="h-7 w-7 rounded object-contain" suppressHydrationWarning />;
+const WechatPayIcon = () => <Image src="/payment-icons/wechat.png" alt="微信支付" width={28} height={28} className="h-7 w-7 rounded object-contain" suppressHydrationWarning />;
+const UnionPayIcon = () => <Image src="/payment-icons/unionpay.png" alt="银联" width={28} height={28} className="h-7 w-7 rounded object-contain" suppressHydrationWarning />;
+const VisaIcon = () => <Image src="/payment-icons/visa.png" alt="Visa" width={28} height={28} className="h-7 w-7 rounded object-contain" suppressHydrationWarning />;
+const MastercardIcon = () => <Image src="/payment-icons/mastercard.png" alt="Mastercard" width={28} height={28} className="h-7 w-7 rounded object-contain" suppressHydrationWarning />;
 
 const payMethodsData: { id: PayMethod; name: string; nameEn: string; icon: React.ReactNode; brandColor: string }[] = [
   { id: "alipay", name: "支付宝", nameEn: "Alipay", icon: <AlipayIcon />, brandColor: "border-[#1677FF]" },
