@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Required for electron-builder packaging (embeds Next.js server)
-  output: process.env.ELECTRON_BUILD === "1" ? "standalone" : undefined,
+  // standalone output for server deployment & electron-builder packaging
+  output: "standalone",
 
   async headers() {
     return [
