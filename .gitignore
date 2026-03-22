@@ -44,3 +44,7 @@ next-env.d.ts
 
 # lock files (keep package-lock.json)
 pnpm-lock.yaml
+
+# deployment artifacts
+*.tar.gz
+/deploy-package
