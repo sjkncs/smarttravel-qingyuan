@@ -3,10 +3,21 @@ import { dirname } from "path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const isStaticExport = process.env.STATIC_EXPORT === "1" || process.env.GITHUB_PAGES === "1";
+const isElectronBuild = process.env.ELECTRON_BUILD === "1";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Required for electron-builder packaging (embeds Next.js server)
-  output: process.env.ELECTRON_BUILD === "1" ? "standalone" : undefined,
+  // GitHub Pages needs static export, Electron needs standalone
+  output: isElectronBuild ? "standalone" : isStaticExport ? "export" : undefined,
+
+  // GitHub Pages dist directory
+  distDir: isStaticExport ? "dist" : ".next",
+
+  // Fix image optimization for static export
+  images: {
+    unoptimized: isStaticExport,
+  },
 
   // Fix Turbopack root detection when multiple lockfiles exist in parent dirs
   turbopack: {
