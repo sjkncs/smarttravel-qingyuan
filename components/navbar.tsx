@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,7 @@ import {
   HamburgerMenuIcon,
   Cross1Icon,
 } from "@radix-ui/react-icons";
-import { MapPin, Brain, Mountain, Compass, Sparkles, Users, MessageSquare, CreditCard, Trophy, LogIn, UserPlus, User } from "lucide-react";
+import { MapPin, Brain, Mountain, Compass, Sparkles, Users, MessageSquare, CreditCard, Trophy, LogIn, UserPlus, User, Box } from "lucide-react";
 import EditionSwitcher from "@/components/edition-switcher";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -61,6 +61,7 @@ export default function NavBar() {
     { icon: Brain, href: "/planner", title: t("dropdown.planner"), desc: t("dropdown.planner.desc") },
     { icon: MapPin, href: "/map", title: t("dropdown.map"), desc: t("dropdown.map.desc") },
     { icon: Sparkles, href: "/guide", title: t("dropdown.guide"), desc: t("dropdown.guide.desc") },
+    { icon: Box, href: "/3d", title: locale === "zh" ? "3D扫描建模" : "3D Scanning", desc: locale === "zh" ? "摄影测量/LiDAR高保真数字孪生" : "Photogrammetry/LiDAR digital twins" },
     { icon: Users, href: "/community", title: t("dropdown.community"), desc: t("dropdown.community.desc") },
     { icon: MessageSquare, href: "/forum", title: locale === "zh" ? "旅行社区" : "Community Forum", desc: locale === "zh" ? "问答·攻略·测评，真实旅行者交流平台" : "Q&A, guides, reviews from real travelers" },
     { icon: Trophy, href: "/rankings", title: locale === "zh" ? "村落排行榜" : "Village Rankings", desc: locale === "zh" ? "多维度实时排名，发现最佳目的地" : "Multi-dimensional real-time rankings" },
@@ -98,13 +99,13 @@ export default function NavBar() {
           <div className="flex sm:hidden">
             <Link href="/" className="font-semibold tracking-tight text-lg flex items-center gap-1.5">
               <Mountain className="h-5 w-5 text-emerald-600" />
-              <span className="bg-linear-to-r from-emerald-700 to-emerald-500 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent">智游清远</span>
+              <span className="bg-linear-to-r from-emerald-700 to-emerald-500 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent">智游乡野</span>
             </Link>
           </div>
           <div className="hidden sm:flex items-center space-x-6">
             <Link href="/" className="font-semibold tracking-tight text-xl flex items-center gap-2">
               <Mountain className="h-6 w-6 text-emerald-600" />
-              <span className="bg-linear-to-r from-emerald-700 to-emerald-500 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent">智游清远</span>
+              <span className="bg-linear-to-r from-emerald-700 to-emerald-500 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent">智游乡野</span>
             </Link>
 
             <Button asChild variant="ghost" size="sm">

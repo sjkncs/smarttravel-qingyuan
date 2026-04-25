@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { motion, useInView } from "framer-motion";
@@ -140,7 +140,7 @@ const plans = [
 ];
 
 const testimonials = [
-  { name: "张总", role: "某5A景区CEO", avatar: "张", quote: "部署智游清远企业版后，我们的数字化运营效率提升了3倍，游客满意度从82%提升到96%。这是我见过的最懂文旅行业的技术团队。", quoteEn: "After deploying SmartTravel Enterprise, our operational efficiency tripled and visitor satisfaction rose from 82% to 96%." },
+  { name: "张总", role: "某5A景区CEO", avatar: "张", quote: "部署智游乡野企业版后，我们的数字化运营效率提升了3倍，游客满意度从82%提升到96%。这是我见过的最懂文旅行业的技术团队。", quoteEn: "After deploying SmartTravel Enterprise, our operational efficiency tripled and visitor satisfaction rose from 82% to 96%." },
   { name: "李经理", role: "华南旅行社运营总监", avatar: "李", quote: "AI推荐引擎让我们的获客成本降低了52%，CBT报告帮我们拿到了行业首个ESG A级认证。ROI远超预期。", quoteEn: "The AI engine cut our acquisition cost by 52%, and the CBT report helped us achieve the industry's first ESG A-rating." },
   { name: "王主任", role: "某市文旅局数据处", avatar: "王", quote: "政企联动方案让我们实现了从数据采集到政策评估的全链路闭环，为乡村振兴决策提供了强有力的数据支撑。", quoteEn: "The gov-enterprise solution enabled a full-chain closed loop from data collection to policy assessment." },
 ];
@@ -371,7 +371,7 @@ export default function EnterprisePage() {
             <div className="inline-flex items-center gap-2 text-xs font-semibold text-sky-600 mb-3">
               <Target className="h-3.5 w-3.5" />{locale === "zh" ? "竞品对比" : "COMPETITIVE COMPARISON"}
             </div>
-            <h2 className="text-3xl md:text-4xl font-extrabold mb-4">{locale === "zh" ? "为什么选择智游清远" : "Why SmartTravel QY"}</h2>
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-4">{locale === "zh" ? "为什么选择智游乡野" : "Why SmartTravel QY"}</h2>
           </motion.div>
           <motion.div initial={{ y: 20, opacity: 0 }} whileInView={{ y: 0, opacity: 1 }} viewport={{ once: true }}>
             <div className="rounded-2xl border border-border bg-card overflow-hidden">
@@ -379,7 +379,7 @@ export default function EnterprisePage() {
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
                     <th className="text-left p-3 font-semibold">{locale === "zh" ? "功能" : "Feature"}</th>
-                    <th className="text-center p-3 font-bold text-sky-600">{locale === "zh" ? "智游清远" : "SmartTravel"}</th>
+                    <th className="text-center p-3 font-bold text-sky-600">{locale === "zh" ? "智游乡野" : "SmartTravel"}</th>
                     <th className="text-center p-3 font-medium text-muted-foreground">{locale === "zh" ? "竞品A" : "Comp A"}</th>
                     <th className="text-center p-3 font-medium text-muted-foreground">{locale === "zh" ? "竞品B" : "Comp B"}</th>
                   </tr>

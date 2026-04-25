@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -261,7 +261,7 @@ export default function CommunityPage() {
             </h3>
             <p className="text-muted-foreground max-w-2xl mx-auto mb-6">
               {locale === "zh"
-                ? "智游清远致力于让每一笔旅游消费都能真正惠及当地社区。通过CBT社区受益追踪系统，确保收入透明分配，激励在地雇佣和青年回流，实现「旅游兴村」的乡村振兴目标。"
+                ? "智游乡野致力于让每一笔旅游消费都能真正惠及当地社区。通过CBT社区受益追踪系统，确保收入透明分配，激励在地雇佣和青年回流，实现「旅游兴村」的乡村振兴目标。"
                 : "SmartTravel Qingyuan is committed to ensuring every tourism dollar truly benefits local communities through our CBT tracking system."}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mb-6">

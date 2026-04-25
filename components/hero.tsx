@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -72,11 +72,11 @@ export default function Hero() {
             </div>
             <div className="flex items-center gap-1.5">
               <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
-              清远5大特色村落
+              覆盖10个省份
             </div>
             <div className="flex items-center gap-1.5">
               <div className="h-2 w-2 rounded-full bg-emerald-500"></div>
-              瑶族/壮族文化保护
+              15+特色乡村
             </div>
           </motion.div>
         </motion.div>
@@ -92,7 +92,7 @@ export default function Hero() {
               <div className="h-3 w-3 rounded-full bg-rose-400"></div>
               <div className="h-3 w-3 rounded-full bg-amber-400"></div>
               <div className="h-3 w-3 rounded-full bg-emerald-400"></div>
-              <span className="ml-3 text-xs text-muted-foreground">智游清远 — AI对话规划</span>
+              <span className="ml-3 text-xs text-muted-foreground">智游乡野 — AI对话规划</span>
             </div>
 
             <div className="pt-14 pb-8 px-6 md:px-10 space-y-4">
@@ -101,7 +101,7 @@ export default function Hero() {
                   <Mountain className="h-4 w-4 text-emerald-600" />
                 </div>
                 <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl rounded-tl-sm px-4 py-3 max-w-lg">
-                  <p className="text-sm">您好！我是清远旅游AI助手「小智」，专精广东清远乡村/少数民族旅游。想去哪里探索呢？</p>
+                  <p className="text-sm">您好！我是智游乡野AI助手「小智」，专精全国乡村/少数民族旅游。想去哪里探索呢？</p>
                 </div>
               </div>
 

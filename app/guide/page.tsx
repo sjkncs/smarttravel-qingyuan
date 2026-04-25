@@ -106,6 +106,62 @@ export default function GuidePage() {
   const [selectedStory, setSelectedStory] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [activeDialect, setActiveDialect] = useState<string | null>(null);
+  const [ttsSupported, setTtsSupported] = useState(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Check TTS support
+  useEffect(() => {
+    setTtsSupported(typeof window !== "undefined" && "speechSynthesis" in window);
+    return () => { window.speechSynthesis?.cancel(); };
+  }, []);
+
+  const playingStoryRef = useRef<string | null>(null);
+
+  const speakText = (text: string, lang: string = "zh-CN") => {
+    if (!ttsSupported) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = lang;
+    utter.rate = 0.9;
+    utter.pitch = 1.0;
+    utter.onend = () => { setIsPlaying(false); playingStoryRef.current = null; };
+    utter.onerror = () => { setIsPlaying(false); playingStoryRef.current = null; };
+    utteranceRef.current = utter;
+    window.speechSynthesis.speak(utter);
+  };
+
+  const toggleStoryAudio = (storyId: string, content: string) => {
+    if (isPlaying && playingStoryRef.current === storyId) {
+      window.speechSynthesis?.cancel();
+      setIsPlaying(false);
+      playingStoryRef.current = null;
+      return;
+    }
+    // Stop any existing speech first
+    window.speechSynthesis?.cancel();
+    playingStoryRef.current = storyId;
+    setSelectedStory(storyId);
+    setIsPlaying(true);
+    // Small delay to ensure cancel completes before new speak
+    setTimeout(() => speakText(content, locale === "zh" ? "zh-CN" : "en-US"), 50);
+  };
+
+  const speakDialect = (phrase: string, dialect: string) => {
+    if (!ttsSupported) return;
+    if (activeDialect === phrase) {
+      window.speechSynthesis.cancel();
+      setActiveDialect(null);
+      return;
+    }
+    setActiveDialect(phrase);
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(phrase);
+    utter.lang = dialect === "粤语" ? "zh-HK" : "zh-CN";
+    utter.rate = 0.7;
+    utter.onend = () => setActiveDialect(null);
+    utter.onerror = () => setActiveDialect(null);
+    window.speechSynthesis.speak(utter);
+  };
 
   // AI chat state
   const [chatMessages, setChatMessages] = useState<ChatMsg[]>([
@@ -292,7 +348,7 @@ export default function GuidePage() {
                             variant="ghost"
                             size="sm"
                             className="h-7 px-2 text-xs text-emerald-600"
-                            onClick={(e) => { e.stopPropagation(); setIsPlaying(!isPlaying); setSelectedStory(s.id); }}
+                            onClick={(e) => { e.stopPropagation(); toggleStoryAudio(s.id, locale === "zh" ? s.content : s.contentEn); }}
                           >
                             {isPlaying && selectedStory === s.id ? <Pause className="h-3 w-3 mr-1" /> : <Play className="h-3 w-3 mr-1" />}
                             {locale === "zh" ? "语音讲解" : "Audio"}
@@ -471,7 +527,7 @@ export default function GuidePage() {
                       variant="ghost"
                       size="sm"
                       className="h-7 w-7 p-0"
-                      onClick={() => setActiveDialect(activeDialect === d.phrase ? null : d.phrase)}
+                      onClick={() => speakDialect(d.phrase, d.dialect)}
                     >
                       {activeDialect === d.phrase ? (
                         <Volume2 className="h-3.5 w-3.5 text-emerald-600 animate-pulse" />

@@ -1,10 +1,10 @@
-import PageHeader from "@/components/page-header";
+﻿import PageHeader from "@/components/page-header";
 import Footer from "@/components/footer";
 
 const sections = [
   {
     title: "一、总则",
-    content: `智游清远社区（以下简称"社区"）致力于打造一个友善、真实、有价值的乡村旅游交流平台。为了维护良好的社区氛围，保障所有用户的合法权益，特制定本社区准则。
+    content: `智游乡野社区（以下简称"社区"）致力于打造一个友善、真实、有价值的乡村旅游交流平台。为了维护良好的社区氛围，保障所有用户的合法权益，特制定本社区准则。
 
 所有用户在使用社区功能时，须遵守本准则。违反准则的内容将被删除，严重违规者将被暂停或永久禁止使用社区功能。`,
   },
@@ -97,7 +97,7 @@ export default function CommunityGuidelinesPage() {
       <section className="flex-1 py-12 px-4">
         <div className="max-w-3xl mx-auto">
           <div className="mb-8 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-sm text-amber-800 dark:text-amber-200">
-            本社区准则于 2026年3月15日 生效。使用智游清远社区功能即表示您已阅读、理解并同意遵守本准则。
+            本社区准则于 2026年3月15日 生效。使用智游乡野社区功能即表示您已阅读、理解并同意遵守本准则。
           </div>
 
           <div className="space-y-8">

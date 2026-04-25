@@ -29,7 +29,11 @@ export interface Village {
   elevation?: number; // meters above sea level
   terrain?: string;   // "mountain" | "hill" | "plain" | "valley"
   spatialRelations?: { target: string; relation: string; relationEn: string }[];
+  province?: string;  // 省份信息
 }
+
+// 导入扩展的全国乡村旅游数据
+import { extendedVillages } from "./villages-extended";
 
 // 模拟数据库 — 实际项目中替换为数据库查询
 let villages: Village[] = [
@@ -314,4 +318,31 @@ export function getElevationProfile(
     });
   }
   return points;
+}
+
+// 获取所有村落（包括原始和扩展的）
+export function getAllVillages(): Village[] {
+  return [...villages, ...extendedVillages];
+}
+
+// 按省份获取村落
+export function getVillagesByProvince(province: string): Village[] {
+  const allVillages = getAllVillages();
+  return allVillages.filter(v => {
+    const provinceMap: Record<string, string[]> = {
+      "广东": ["清远", "英德", "连南", "佛冈"],
+      "云南": ["大理", "丽江", "香格里拉", "西双版纳", "景洪"],
+      "贵州": ["雷山", "贵阳"],
+      "广西": ["龙胜", "阳朔", "桂林"],
+      "湖南": ["凤凰", "张家界"],
+      "浙江": ["桐乡", "嘉善"],
+      "安徽": ["黟县", "黄山"],
+      "江西": ["上饶", "婺源", "景德镇"],
+      "福建": ["永定", "龙岩"],
+      "四川": ["九寨沟", "松潘"],
+    };
+    
+    const cities = provinceMap[province] || [];
+    return cities.some(city => v.location.includes(city));
+  });
 }

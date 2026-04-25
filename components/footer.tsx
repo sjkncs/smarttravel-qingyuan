@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -43,7 +43,7 @@ const Footer = () => {
                 className="inline-flex items-center gap-2 text-xl font-semibold tracking-tight transition-opacity hover:opacity-80"
               >
                 <Mountain className="h-5 w-5 text-emerald-600" />
-                <span className="bg-linear-to-r from-emerald-700 to-emerald-500 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent">智游清远</span>
+                <span className="bg-linear-to-r from-emerald-700 to-emerald-500 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent">智游乡野</span>
               </Link>
               <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
                 AI驱动的乡村旅游数字化解决方案，融合LangChain智能引擎、村落发现算法、实景地图导航和数字人伴游。
@@ -113,7 +113,7 @@ const Footer = () => {
           <Separator />
 
           <div className="flex flex-col items-center justify-between gap-2 text-center text-xs text-muted-foreground sm:flex-row sm:text-left">
-            <span>© {year} 智游清远 SmartTravel Qingyuan. 版权所有.</span>
+            <span>© {year} 智游乡野 SmartTravel. 版权所有.</span>
             <div className="flex items-center gap-3 flex-wrap justify-center">
               <Link href="/terms" className="hover:text-foreground transition-colors">服务协议</Link>
               <span>·</span>

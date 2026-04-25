@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 import NavBar from "@/components/navbar";
@@ -18,9 +18,9 @@ const notoSansSC = Noto_Sans_SC({
 });
 
 export const metadata: Metadata = {
-  title: "智游清远 — AI驱动的乡村旅游数字化解决方案",
-  description: "告别盲从，发现你的专属小众秘境。AI智能规划、村落发现引擎、实景地图导航、数字人智能伴游，您的24小时乡村旅行管家。",
-  keywords: ["清远旅游", "乡村旅游", "AI旅行", "智能规划", "瑶族文化", "村落发现", "数字人导游"],
+  title: "智游乡野 — AI驱动的乡村旅游数字化解决方案",
+  description: "告别盲从，发现你的专属小众秘境。AI智能规划、村落发现引擎、实景地图导航、数字人智能伴游，您的24小时乡村旅行管家。覆盖10个省份，15+特色乡村。",
+  keywords: ["乡村旅游", "AI旅行", "智能规划", "少数民族文化", "村落发现", "数字人导游", "智游乡野"],
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",
@@ -32,11 +32,11 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "智游清远",
+    title: "智游乡野",
   },
   openGraph: {
-    title: "智游清远 — AI驱动的乡村旅游数字化解决方案",
-    description: "AI智能规划、村落发现引擎、实景地图导航、数字人智能伴游",
+    title: "智游乡野 — AI驱动的乡村旅游数字化解决方案",
+    description: "AI智能规划、村落发现引擎、实景地图导航、数字人智能伴游，覆盖10个省份15+特色乡村",
     type: "website",
   },
 };

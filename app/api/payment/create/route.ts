@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import type { PayMethod } from "@/lib/generated/prisma";
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
           // Production: Use alipay-sdk
           // import AlipaySdk from 'alipay-sdk';
           // const alipaySdk = new AlipaySdk({ appId, privateKey, alipayPublicKey });
-          // payUrl = alipaySdk.pageExec('alipay.trade.page.pay', { bizContent: { out_trade_no: orderNo, total_amount: amount, subject: `智游清远-${planId}`, product_code: 'FAST_INSTANT_TRADE_PAY' } });
+          // payUrl = alipaySdk.pageExec('alipay.trade.page.pay', { bizContent: { out_trade_no: orderNo, total_amount: amount, subject: `智游乡野-${planId}`, product_code: 'FAST_INSTANT_TRADE_PAY' } });
         }
         payUrl = payUrl || `https://openapi.alipay.com/gateway.do?out_trade_no=${orderNo}&total_amount=${amount}`;
         break;

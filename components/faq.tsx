@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import {
   Accordion,
   AccordionContent,
@@ -10,10 +10,10 @@ import { motion } from "framer-motion";
 export default function Faq() {
   const accordionItems = [
     {
-      title: "智游清远是什么？",
+      title: "智游乡野是什么？",
       content: (
         <div className="text-muted-foreground">
-          智游清远是一款AI驱动的乡村旅游数字化解决方案，基于HarmonyOS ArkTS原生开发。
+          智游乡野是一款AI驱动的乡村旅游数字化解决方案，基于HarmonyOS ArkTS原生开发。
           融合LangChain AI引擎、村落发现算法、实景地图导航和数字人伴游，为用户提供从发现、规划、导航到陪伴的一站式智能化乡村旅行服务。
         </div>
       ),
@@ -52,7 +52,7 @@ export default function Faq() {
       title: "需要联网才能使用吗？",
       content: (
         <div className="text-muted-foreground">
-          不需要！智游清远具有三级降级容错架构：有网时使用完整LangChain AI流程（RAG+Agent+Memory），
+          不需要！智游乡野具有三级降级容错架构：有网时使用完整LangChain AI流程（RAG+Agent+Memory），
           API失败时降级为传统LLM对话，完全离线时使用本地知识库+关键词匹配引擎。确保在山区信号弱的乡村也能正常使用。
         </div>
       ),
@@ -85,7 +85,7 @@ export default function Faq() {
           常见问题
         </h4>
         <p className="max-w-xl text-muted-foreground text-center">
-          关于智游清远的常见疑问解答
+          关于智游乡野的常见疑问解答
         </p>
       </div>
       <div className="flex w-full max-w-lg">

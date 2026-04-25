@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -60,7 +60,7 @@ const initialPosts: Post[] = [
     commentCount: 5,
     tags: ["亲子游", "千年瑶寨", "路况咨询"],
     accepted: true,
-    aiSummary: "综合5条回答：千年瑶寨VSI安全指数88分（良好），广州自驾约4小时。寨内主道平坦可推婴儿车，但部分古建筑区有台阶。建议使用智游清远APP的「无障碍路线」功能。住宿推荐寨门口的瑶家客栈，卫生条件近年改善显著。",
+    aiSummary: "综合5条回答：千年瑶寨VSI安全指数88分（良好），广州自驾约4小时。寨内主道平坦可推婴儿车，但部分古建筑区有台阶。建议使用智游乡野APP的「无障碍路线」功能。住宿推荐寨门口的瑶家客栈，卫生条件近年改善显著。",
     comments: [
       {
         id: 101,
@@ -74,7 +74,7 @@ const initialPosts: Post[] = [
         id: 102,
         author: "自驾游老王",
         avatar: "王",
-        content: "上周刚去过。广州出发走广清高速+清连高速，大概3.5-4小时。最后30公里山路弯道多但路面OK，注意限速。建议错开节假日，平时人少体验更好。智游清远APP的实景导航很好用，弯道提前提醒。",
+        content: "上周刚去过。广州出发走广清高速+清连高速，大概3.5-4小时。最后30公里山路弯道多但路面OK，注意限速。建议错开节假日，平时人少体验更好。智游乡野APP的实景导航很好用，弯道提前提醒。",
         time: "45分钟前",
         likes: 89,
       },

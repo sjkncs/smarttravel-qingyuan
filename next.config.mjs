@@ -1,7 +1,17 @@
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Required for electron-builder packaging (embeds Next.js server)
   output: process.env.ELECTRON_BUILD === "1" ? "standalone" : undefined,
+
+  // Fix Turbopack root detection when multiple lockfiles exist in parent dirs
+  turbopack: {
+    root: __dirname,
+  },
 
   async headers() {
     return [

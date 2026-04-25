@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -90,7 +90,7 @@ export default function SplashScreen() {
                 transition={{ delay: 0.3, duration: 0.5 }}
                 className="text-xl font-bold tracking-wider text-zinc-800 dark:text-zinc-200"
               >
-                智游清远
+                智游乡野
               </motion.h1>
             </motion.div>
           </div>

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -112,7 +112,7 @@ export default function ForgotPasswordPage() {
             <Link href="/" className="inline-flex items-center gap-2 mb-4">
               <Mountain className="h-8 w-8 text-emerald-600" />
               <span className="text-2xl font-bold bg-linear-to-r from-emerald-700 to-emerald-500 dark:from-emerald-400 dark:to-emerald-300 bg-clip-text text-transparent">
-                {locale === "zh" ? "智游清远" : "SmartTravel"}
+                {locale === "zh" ? "智游乡野" : "SmartTravel"}
               </span>
             </Link>
           </div>

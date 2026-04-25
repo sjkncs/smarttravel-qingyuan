@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -36,7 +36,7 @@ export default function TrayWidget() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.94 }}
           onClick={() => setOpen(!open)}
-          aria-label="智游清远快捷菜单"
+          aria-label="智游乡野快捷菜单"
           className="h-10 w-10 rounded-xl bg-white dark:bg-zinc-800 border border-border shadow-lg shadow-black/10 flex items-center justify-center transition-all hover:shadow-xl hover:border-emerald-300 dark:hover:border-emerald-700"
         >
           <div className="h-6 w-6 rounded-lg bg-linear-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
@@ -73,7 +73,7 @@ export default function TrayWidget() {
                 onClick={() => { setOpen(false); setShowAbout(true); }}
               >
                 <Info className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
-                <div className="text-[13px] font-medium text-foreground">{locale === "zh" ? "关于智游清远" : "About"}</div>
+                <div className="text-[13px] font-medium text-foreground">{locale === "zh" ? "关于智游乡野" : "About"}</div>
                 <ChevronRight className="h-3 w-3 text-zinc-400 ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
               </button>
 
@@ -223,7 +223,7 @@ export default function TrayWidget() {
                     <Mountain className="h-7 w-7 text-white" />
                   </div>
                 </div>
-                <h2 className="text-base font-bold text-foreground">智游清远</h2>
+                <h2 className="text-base font-bold text-foreground">智游乡野</h2>
                 <p className="text-[11px] text-muted-foreground mt-0.5 font-mono">SmartTravel Qingyuan · v1.0.0</p>
               </div>
 

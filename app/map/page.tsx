@@ -15,6 +15,19 @@ import { useI18n } from "@/lib/i18n";
 import { getVillages, getNearbyVillages, haversineDistance, getElevationProfile } from "@/lib/data/villages";
 import type { Village, ElevationPoint } from "@/lib/data/villages";
 import ElevationProfile from "@/components/elevation-profile";
+import dynamic from "next/dynamic";
+
+const AmapContainer = dynamic(() => import("@/components/amap-container"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-full bg-emerald-50/80 dark:bg-emerald-900/30 rounded-2xl">
+      <div className="text-center">
+        <div className="animate-spin h-8 w-8 border-3 border-emerald-600 border-t-transparent rounded-full mx-auto mb-3" />
+        <div className="text-sm text-emerald-700 dark:text-emerald-300">加载地图组件...</div>
+      </div>
+    </div>
+  ),
+});
 
 const mapLayers = [
   { id: "villages", label: "村落标注", labelEn: "Villages", icon: MapPin, color: "emerald", active: true },
@@ -136,95 +149,17 @@ export default function MapPage() {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <div className="lg:col-span-3">
               <div className="rounded-2xl border border-border bg-card/60 backdrop-blur-sm overflow-hidden">
-                <div className="relative h-[500px] bg-linear-to-br from-emerald-100 via-emerald-50 to-sky-50 dark:from-emerald-900/30 dark:via-emerald-800/20 dark:to-sky-900/20">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="relative w-full h-full">
-                      <svg viewBox="0 0 800 500" className="w-full h-full opacity-20">
-                        <path d="M100,200 Q200,100 300,180 Q400,260 500,150 Q600,40 700,120" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-600" />
-                        <path d="M50,300 Q150,250 250,320 Q350,390 450,280 Q550,170 650,250 Q750,330 800,290" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-emerald-400" />
-                        <path d="M0,400 Q100,350 200,380 Q300,410 400,360 Q500,310 600,370 Q700,430 800,390" fill="none" stroke="currentColor" strokeWidth="1" className="text-emerald-300" />
-                      </svg>
+                <div className="relative h-[600px]">
+                  <AmapContainer
+                    villages={allVillages}
+                    selectedMarker={selectedMarker}
+                    onMarkerClick={(id) => setSelectedMarker(id === selectedMarker ? null : id)}
+                    locale={locale}
+                    layersActive={Object.fromEntries(layers.map(l => [l.id, l.active]))}
+                  />
 
-                      {allVillages.map((v) => {
-                        const x = ((v.longitude - 112) * 400 + 100);
-                        const y = ((25 - v.latitude) * 400 + 50);
-                        const vsi = v.highlights.vsi;
-                        const status = vsi >= 85 ? "safe" : "caution";
-                        const terrainInfo = v.terrain ? terrainLabels[v.terrain] : null;
-                        return (
-                          <motion.div
-                            key={v.id}
-                            className="absolute cursor-pointer"
-                            style={{ left: `${Math.min(Math.max(x / 8, 5), 90)}%`, top: `${Math.min(Math.max(y / 5, 10), 85)}%` }}
-                            whileHover={{ scale: 1.2 }}
-                            onClick={() => setSelectedMarker(selectedMarker === v.id ? null : v.id)}
-                          >
-                            <div className={`relative flex flex-col items-center ${selectedMarker === v.id ? "z-20" : "z-10"}`}>
-                              <div className={`h-8 w-8 rounded-full flex items-center justify-center shadow-lg ${
-                                status === "safe" ? "bg-emerald-600" : "bg-amber-500"
-                              }`}>
-                                <MapPin className="h-4 w-4 text-white" />
-                              </div>
-                              <div className="mt-1 px-2 py-0.5 rounded bg-white/90 dark:bg-black/70 backdrop-blur-sm text-xs font-medium whitespace-nowrap shadow-sm">
-                                {locale === "zh" ? v.name : v.nameEn}
-                              </div>
-                              {layers.find(l => l.id === "safety")?.active && (
-                                <div className={`mt-0.5 text-xs font-bold ${vsi >= 90 ? "text-emerald-600" : vsi >= 80 ? "text-amber-600" : "text-red-600"}`}>
-                                  VSI: {vsi}
-                                </div>
-                              )}
-
-                              {selectedMarker === v.id && (
-                                <motion.div
-                                  initial={{ opacity: 0, y: -5 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  className="absolute top-full mt-2 w-56 p-3 rounded-xl bg-white dark:bg-gray-900 border border-border shadow-xl z-30"
-                                >
-                                  <div className="text-sm font-bold mb-1">{locale === "zh" ? v.name : v.nameEn}</div>
-                                  <div className="text-[10px] text-muted-foreground mb-2">
-                                    {v.latitude.toFixed(4)}°N, {v.longitude.toFixed(4)}°E
-                                  </div>
-                                  <div className="grid grid-cols-2 gap-1 text-xs mb-2">
-                                    <div className="flex items-center gap-1">
-                                      <Shield className={`h-3 w-3 ${vsi >= 90 ? "text-emerald-500" : "text-amber-500"}`} />
-                                      <span>VSI: {vsi}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                      <Mountain className="h-3 w-3 text-violet-500" />
-                                      <span>{v.elevation ?? "--"}m</span>
-                                    </div>
-                                    {terrainInfo && (
-                                      <div className="flex items-center gap-1 col-span-2">
-                                        <span>{terrainInfo.icon}</span>
-                                        <span className="text-muted-foreground">{locale === "zh" ? terrainInfo.zh : terrainInfo.en}</span>
-                                        {userLocation && (
-                                          <span className="ml-auto text-emerald-600 font-medium">
-                                            {Math.round(haversineDistance(userLocation.lat, userLocation.lng, v.latitude, v.longitude))}km
-                                          </span>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="flex gap-1">
-                                    <Button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7" size="sm"
-                                      onClick={(e) => { e.stopPropagation(); router.push(`/planner?village=${v.id}`); }}>
-                                      {locale === "zh" ? "规划路线" : "Plan Route"}
-                                    </Button>
-                                    <Button variant="outline" className="text-xs h-7 px-2" size="sm"
-                                      onClick={(e) => { e.stopPropagation(); router.push(`/villages/${v.id}`); }}>
-                                      {locale === "zh" ? "详情" : "Detail"}
-                                    </Button>
-                                  </div>
-                                </motion.div>
-                              )}
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="absolute top-4 left-4 right-4">
+                  {/* Search overlay */}
+                  <div className="absolute top-4 left-4 right-16 z-10">
                     <div className="relative max-w-sm">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <input
@@ -255,8 +190,9 @@ export default function MapPage() {
                     </div>
                   </div>
 
+                  {/* Weather overlay */}
                   {layers.find(l => l.id === "weather")?.active && (
-                    <div className="absolute bottom-4 left-4 bg-white/90 dark:bg-black/70 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-border">
+                    <div className="absolute bottom-4 left-4 z-10 bg-white/90 dark:bg-black/70 backdrop-blur-sm rounded-xl p-3 shadow-lg border border-border">
                       <div className="flex items-center gap-2 mb-1">
                         <Cloud className="h-4 w-4 text-sky-500" />
                         <span className="text-sm font-medium">{weatherData.location}</span>
@@ -279,13 +215,6 @@ export default function MapPage() {
                   >
                     <Locate className={`h-4.5 w-4.5 ${locating ? "animate-spin text-emerald-500" : userLocation ? "text-emerald-600" : "text-muted-foreground"}`} />
                   </button>
-
-                  <div className="absolute bottom-4 right-4 text-xs text-muted-foreground bg-white/70 dark:bg-black/50 px-2 py-1 rounded">
-                    {userLocation
-                      ? `${userLocation.lat.toFixed(2)}°N, ${userLocation.lng.toFixed(2)}°E`
-                      : (locale === "zh" ? "高德地图 · GIS增强" : "Amap · GIS Enhanced")
-                    }
-                  </div>
                 </div>
               </div>
             </div>

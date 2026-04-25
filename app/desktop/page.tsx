@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,7 +7,7 @@ import {
   Minus, X, Maximize2, Minimize2, Bot, Mountain,
   Sparkles, Globe, Image as ImageIcon, FileText, Mic, ChevronDown,
   Sun, Moon, History, RefreshCw,
-  Map, Brain, Compass, Route, PictureInPicture2, VolumeX,
+  Map, Brain, Compass, Route, PictureInPicture2, VolumeX, Box,
   Check, Paperclip,
   PanelLeftClose, PanelLeft, User, LogIn, ArrowLeft,
 } from "lucide-react";
@@ -52,6 +52,7 @@ const QUICK_ACTIONS = [
   { icon: Compass, label: "村落发现", href: "/villages", color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-900/30" },
   { icon: Map, label: "实景地图", href: "/map", color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-900/30" },
   { icon: Route, label: "AI导游", href: "/guide", color: "text-rose-500", bg: "bg-rose-50 dark:bg-rose-900/30" },
+  { icon: Box, label: "3D建模", href: "/3d", color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/30" },
   { icon: Globe, label: "网页版", href: "/", color: "text-violet-500", bg: "bg-violet-50 dark:bg-violet-900/30" },
 ];
 
@@ -98,7 +99,7 @@ function TitleBar({
         <div className="h-7 w-7 rounded-lg bg-linear-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
           <Mountain className="h-3.5 w-3.5 text-white" />
         </div>
-        <span className="text-sm font-semibold text-foreground">{isMini ? "小智" : "智游清远"}</span>
+        <span className="text-sm font-semibold text-foreground">{isMini ? "小智" : "智游乡野"}</span>
         {!isMini && <span className="text-[10px] text-muted-foreground/60 bg-muted/40 px-1.5 py-0.5 rounded">v1.0</span>}
       </div>
 
@@ -472,7 +473,7 @@ function SettingsPanel({ open, onClose, webSearch, onToggleWebSearch }: {
           <div className="border-t border-border" />
           <div>
             <p className="text-sm font-medium mb-1">关于</p>
-            <p className="text-xs text-muted-foreground">智游清远 v1.0.0 · AI驱动的乡村旅游助手</p>
+            <p className="text-xs text-muted-foreground">智游乡野 v1.0.0 · AI驱动的乡村旅游助手</p>
             <p className="text-xs text-muted-foreground mt-1">SSE流式输出 · BM25+TF-IDF混合检索 · RAG知识库增强</p>
           </div>
         </div>

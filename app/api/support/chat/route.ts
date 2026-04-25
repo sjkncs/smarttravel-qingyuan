@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+﻿import { NextRequest } from "next/server";
 import { searchSupportKB, classifySupportIntent, getQuickReply } from "@/lib/support/knowledge-base";
 import { prisma } from "@/lib/prisma";
 
@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 // 参考: 美团智能客服多轮对话架构 / 淘宝万象平台知识检索
 // ══════════════════════════════════════════════════════════════════
 
-const SUPPORT_SYSTEM_PROMPT = `你是「小帮」，智游清远平台的智能客服助手，由SmartTravel团队开发。
+const SUPPORT_SYSTEM_PROMPT = `你是「小帮」，智游乡野平台的智能客服助手，由SmartTravel团队开发。
 
 你的职责：
 1. 解答用户关于平台使用的各类问题

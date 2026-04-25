@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+﻿import { NextRequest } from "next/server";
 import { retrieveDocuments, classifyIntent } from "@/lib/rag/knowledge-base";
 import { generateLocalResponse } from "./local-fallback";
 
@@ -12,7 +12,7 @@ interface ChatMessage {
   content: string;
 }
 
-const SYSTEM_PROMPT = `你是「小智」，清远旅游AI助手，由智游清远（SmartTravel）团队开发。
+const SYSTEM_PROMPT = `你是「小智」，清远旅游AI助手，由智游乡野（SmartTravel）团队开发。
 
 你的能力：
 1. 智能行程规划 — 根据用户时间、预算、偏好生成个性化方案
@@ -263,9 +263,9 @@ export async function POST(req: NextRequest) {
       ragSources: retrievedDocs.map((d) => d.title),
     };
 
-    const apiKey = process.env.OPENAI_API_KEY;
-    const baseUrl = process.env.OPENAI_BASE_URL || "https://api.openai.com/v1";
-    const model = process.env.OPENAI_MODEL || "gpt-4o-mini";
+    const apiKey = process.env.IFLOW_API_KEY || process.env.OPENAI_API_KEY;
+    const baseUrl = process.env.IFLOW_API_URL || process.env.OPENAI_BASE_URL || "https://apis.iflow.cn/v1";
+    const model = process.env.IFLOW_MODEL || process.env.OPENAI_MODEL || "qwen3-vl-plus";
     const anthropicKey = process.env.ANTHROPIC_API_KEY;
     const isClaudeModel = model.startsWith("claude-") || !!anthropicKey;
 

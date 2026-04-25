@@ -40,6 +40,11 @@ next-env.d.ts
 
 # electron build output
 /dist-electron
+/dist-electron-new
+/screenshots
+/scripts
+/update_business_plan.js
+/prisma.config.ts
 
 # lock files (keep package-lock.json)
 pnpm-lock.yaml
