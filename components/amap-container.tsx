@@ -41,8 +41,8 @@ export default function AmapContainer({
     if (!mapRef.current) return;
     if (mapInstanceRef.current) return;
 
-    const jsKey = process.env.NEXT_PUBLIC_AMAP_JS_KEY;
-    const secKey = process.env.NEXT_PUBLIC_AMAP_SECURITY_KEY;
+    const jsKey = process.env.NEXT_PUBLIC_GAODE_KEY || process.env.NEXT_PUBLIC_AMAP_JS_KEY;
+    const secKey = process.env.NEXT_PUBLIC_GAODE_SECURITY_KEY || process.env.NEXT_PUBLIC_AMAP_SECURITY_KEY;
 
     if (!jsKey) {
       setLoadError("高德地图 API Key 未配置");

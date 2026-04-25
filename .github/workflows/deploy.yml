@@ -35,11 +35,12 @@ jobs:
         env:
           GITHUB_PAGES: "1"
           # 高德地图 key（公开）
-          NEXT_PUBLIC_GAODE_KEY: ${{ secrets.NEXT_PUBLIC_GAODE_KEY }}
+          NEXT_PUBLIC_GAODE_KEY: ${{ secrets.NEXT_PUBLIC_GAODE_KEY || '8cb6ea92e517e4d1de8588540c4c5191' }}
+          NEXT_PUBLIC_GAODE_SECURITY_KEY: ${{ secrets.NEXT_PUBLIC_GAODE_SECURITY_KEY || 'e616be357262813c1b086fef48c8d020' }}
           # LLM API 配置（静态托管模式下客户端直连必需）
-          NEXT_PUBLIC_IFLOW_API_KEY: ${{ secrets.NEXT_PUBLIC_IFLOW_API_KEY }}
-          NEXT_PUBLIC_IFLOW_API_URL: ${{ secrets.NEXT_PUBLIC_IFLOW_API_URL || 'https://apis.iflow.cn/v1' }}
-          NEXT_PUBLIC_IFLOW_MODEL: ${{ secrets.NEXT_PUBLIC_IFLOW_MODEL || 'qwen3-vl-plus' }}
+          NEXT_PUBLIC_IFLOW_API_KEY: ${{ secrets.NEXT_PUBLIC_IFLOW_API_KEY || 'ak_2yB7yX46I2wR32C4tZ30i3sf5zM3j' }}
+          NEXT_PUBLIC_IFLOW_API_URL: ${{ secrets.NEXT_PUBLIC_IFLOW_API_URL || 'https://api.longcat.chat/openai' }}
+          NEXT_PUBLIC_IFLOW_MODEL: ${{ secrets.NEXT_PUBLIC_IFLOW_MODEL || 'LongCat-Flash-Thinking-2601' }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
